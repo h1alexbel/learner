@@ -76,3 +76,16 @@ cb.await(); // in worker's code
 ```
 When all workers will await,
 the last worker will enable the barrier and runs the `enableThread`.
+
+![answer.png](answer.png)
+
+## Semaphore
+
+Semaphore in Java is a variable that is used to manage processes that run in parallel.
+It is a non-negative variable
+that indicates the number of resources in the system that are available at a point in time.
+By using counters,
+the semaphore controls the shared resources
+to ensure that threads running simultaneously are able to access the resources and avoid race conditions.
+Thus, the semaphore protects critical sections by using synchronized constructs.
+
