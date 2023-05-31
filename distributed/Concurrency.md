@@ -89,3 +89,17 @@ the semaphore controls the shared resources
 to ensure that threads running simultaneously are able to access the resources and avoid race conditions.
 Thus, the semaphore protects critical sections by using synchronized constructs.
 
+```java
+Semaphore semaphore = new Semaphore(10);
+semaphore.tryAcquire(); // return true if a permit is available immediately and acquire it
+// otherwise return false, but `acquire()` acquires a permit and blocking until one is available
+ 
+semaphore.release(); // release a permit
+semaphore.availablePermits(); // return a number fo current permits available
+```
+
+Difference between Mutex and Semaphore
+A mutex is an object.
+Semaphore is an integer variable.
+Mutex allows multiple program threads to access a single resource but not simultaneously.
+Semaphore allows multiple program threads to access a finite instance of resources.
