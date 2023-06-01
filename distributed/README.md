@@ -1,6 +1,6 @@
 > "In the messy reality of distributed systems, you have to be very careful with your assumptions."
-<br>
-> @Martin Kleppmann
+> <br>
+> Martin Kleppmann
 
 ### Distributed Locking
 
