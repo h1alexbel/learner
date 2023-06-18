@@ -99,6 +99,39 @@ For enabling web-site hosting via S3, you need to expose `GetObject` permission 
 With Data Lake use-case you can query objects.
 Also, AWS S3 supports events.
 
+## AWS DynamoDB
+
+Item key consists of:
+Partition key (Hash key);
+or
+Partition key (Hash key) and Sort key (Range key).
+
+Local secondary index (LSI) —An index that has the same partition key as the base table, but a different sort key.
+
+RCU - Read Capacity Units.
+WCU - Write Capacity Units.
+
+LSI — Local Secondary Index, **can be created only on table creation**, **up to 5** in scope of one table.
+GSI — Global Secondary Index, can be created anytime, **up to 20** in scope of one table.
+
+A global secondary index lets you query over the entire table, across all partitions.
+The primary key of a global secondary index can be either simple (partition key) or composite (partition key and sort key).
+A local secondary index lets you query over a single partition, as specified by the partition key value in the query.
+The primary key of a local secondary index must be composite (partition key and sort key).
+
+In general, you **should use global secondary indexes** rather than local secondary indexes.
+The exception is when you need strong consistency in your query results,
+which a local secondary index can provide but a global secondary index cannot
+(global secondary index queries only support eventual consistency).
+
+DynamoDB is NoSQL, serverless database.
+You can do `Scan`, `Query`, or `GetItem` your Table **Items**.
+`Scan` - iterates through all the items, consumes more RCUs.
+`Query` - iterating require usage of indexes, consumes less RCUs.
+`GetItem` - returns a set of attributes for the **item** with the **given primary key**.
+If there is no matching item,
+GetItem does not return any data and there will be no Item element in the response.
+
 ## AWS Lambda
 
 ## AWS API Gateway
