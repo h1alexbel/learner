@@ -86,6 +86,19 @@ Everything can be setup in the IAM dashboard.
 
 ## AWS S3
 
+AWS type of storages:
+1. Amazon Elastic Block Storage -> General Purpose SSD, IOPS SSD, Throughput Optimized HDD, Cold HDD
+2. Amazon Elastic File Storage
+3. Object Storage -> S3 Standard, Standard-IA, One-Zone-IA, Glacier, Glacier Archive
+
+AWS S3 use-cases:
+1. Bucket + content
+2. Web-site hosting
+3. Data Lake
+For enabling web-site hosting via S3, you need to expose `GetObject` permission to **public**.
+With Data Lake use-case you can query objects.
+Also, AWS S3 supports events.
+
 ## AWS Lambda
 
 ## AWS API Gateway
