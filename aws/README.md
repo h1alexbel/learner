@@ -14,24 +14,15 @@ SigV4 was quite challenging, that's why SDK are existing.
 ## AWS IAM
 IAM — Identity and Access Management.
 
-Deactivate and delete your ROOT account credentials.
-Generate IAM user's keys for security tracing (but without access to IAM).
-Create RBAC (Role Based Access Control).
-Create Admin and attach roles for others.
-Account ID -> Account Alias.
-Account Alias must be globally unique.
+### Accounts, Users, Groups
+Deactivate and delete your ROOT account credentials, it shouldn't be used or shared.
+Create users instead.
+**Users** can be part of multiple groups.
+**Groups** only contain users, not other groups.
+![iam-users-and-groups.png](iam-users-and-groups.png)
 
-Configuration stored in `.aws/config`.
-Credentials are stored in `.aws/credentials`.
-You can give a name for your account with profile alias.
-In `.aws/credentials` you can specify [$profile] node on top of `ACCESS_KEY` and `SECRET_KEY`.
-In AWS CLI you can choose the profile using `--profile`.
-
-Each service has permissions.
-You can assign them to AWS services using policies.
-For example, Inline Policy —
-1:1 mapping permissions only for 1 user / service and nobody else.
-Also, policies can be mapped in JSON.
+### Policies
+Users and Groups can be assigned JSON documents, a.k.a IAM Policies:
 
 ```json
 {
@@ -79,6 +70,82 @@ Also, policies can be mapped in JSON.
     ]
 }
 ```
+These policies define the **permissions** of the users.
+In AWS, you apply **the least privilege principle**:
+don't give more permissions than a user needs.
+
+Generate IAM user's keys for security tracing (but without access to IAM).
+Create RBAC (Role Based Access Control).
+Create Admin and attach roles for others.
+Account ID -> Account Alias.
+Account Alias must be globally unique.
+
+IAM Policies inheritance:
+<br>
+Users inherit the policies from attached Groups.
+<br>
+Also, can `Inline Policy` be applied. 
+`Inline Policy` — 1:1 mapping permissions only for 1 user / service and nobody else.
+![iam-inheritance.png](iam-inheritance.png)
+
+IAM Policy Structure:
+<br>
+`Version`: policy language version
+<br>
+`Id`: an identifier for the policy
+<br>
+`Statement`: one or more individual statements, which consists of:
+<br>
+`Sid`: an identifier for the statement
+<br>
+`Effect`: whether the statement allows or denies access (**Allow**, **Deny**)
+<br>
+`Principal`: account/user/role to which the policy applied to
+<br>
+`Action`: list of actions this policy allows or denies (based on the Effect)
+<br>
+`Resource`: list of resources on which actions will be applied
+<br>
+`Condition`: when to apply actions
+
+Policies can be created using either JSON or Visual editor.
+
+### IAM Multi-Factor Authentication (MFA)
+
+Strong protection of your AWS account.
+MFA = _password you know_ + _security device you own_
+
+MFA device options in AWS:
+<br>
+Virtual device:
+<br>
+Google Authenticator (phone only)
+<br>
+Authy (multi-device)
+
+Universal 2nd Factor (U2F) Security Key:
+YubiKey by Yubico (3rd party) and other keychains.
+
+### Accessing the AWS
+To access AWS, you have 3 options:
+1. Management Console (protected by password + MFA)
+2. Command Line Interface (CLI) (protected by access keys)
+3. Software Development Kit (SDK) (protected by access keys)
+
+Users manage their own access keys.
+Access Key ~= username
+Secret Key ~= password
+
+Configuration stored in `.aws/config`.
+Credentials are stored in `.aws/credentials`.
+You can give a name for your account with profile alias.
+In `.aws/credentials` you can specify [$profile] node on top of `ACCESS_KEY` and `SECRET_KEY`.
+In AWS CLI you can choose the profile using `--profile`.
+
+Each service has permissions.
+You can assign them to AWS services using policies.
+For example, Inline Policy —
+1:1 mapping permissions only for 1 user / service and nobody else.
 
 Permissions, which are not explicitly allowed -> they are **implicitly denied**.
 Policies can be **Identity-based** or **Resource-based**.
@@ -141,3 +208,25 @@ GetItem does not return any data and there will be no Item element in the respon
 ## AWS Cloudwatch
 
 ### XRAY
+
+## AWS Regions
+
+Factors for choosing a particular AWS Region:
+1. Compliance with data governance and legal requirements: data never leaves a region without your explicit permission.
+2. Proximity to customers: reduced **latency**.
+3. Available services withing an AWS Region: new services and new features aren't available in every Region.
+4. Pricing: pricing varies region to region.
+
+Each region has unique code.
+Each region has at least **3 availability zones** (AZs).
+**Min is 3, max is 6 AZs.**
+
+AWS has 400+ POPs (or Edge Locations), 10+ Regional Caches in 90+ cities across 40+ countries.
+Content is delivered to end users with lower latency.
+
+AWS has Global Services:
+1. AWS IAM
+2. Route 53
+3. CloudFront
+4. WAF
+But most AWS services are **Region-scoped**.
