@@ -141,3 +141,25 @@ GetItem does not return any data and there will be no Item element in the respon
 ## AWS Cloudwatch
 
 ### XRAY
+
+## AWS Regions
+
+Factors for choosing a particular AWS Region:
+1. Compliance with data governance and legal requirements: data never leaves a region without your explicit permission.
+2. Proximity to customers: reduced **latency**.
+3. Available services withing an AWS Region: new services and new features aren't available in every Region.
+4. Pricing: pricing varies region to region.
+
+Each region has unique code.
+Each region has at least **3 availability zones** (AZs).
+**Min is 3, max is 6 AZs.**
+
+AWS has 400+ POPs (or Edge Locations), 10+ Regional Caches in 90+ cities across 40+ countries.
+Content is delivered to end users with lower latency.
+
+AWS has Global Services:
+1. AWS IAM
+2. Route 53
+3. CloudFront
+4. WAF
+But most AWS services are **Region-scoped**.
