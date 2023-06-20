@@ -237,7 +237,7 @@ AWS EC2 Instance Types:
 3. **Memory Optimized**, Fast performance for workloads that process large data sets in memory.
    Use-cases: High performance databases, Distributed web scale cache stores,
    In-memory databases optimized for BI (business intelligence), Real-time processing of big unstructured data.
-4. Storage Optimized, Great for storage-intensive tasks that require high,
+4. **Storage Optimized**, Great for storage-intensive tasks that require high,
    sequential read and write access to large data sets on local storage.
    Use-cases: High frequency online transaction processing (OLTP) systems,
    Relational and NoSQL databases, Cache for in-memory database,
