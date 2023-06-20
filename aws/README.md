@@ -132,6 +132,9 @@ To access AWS, you have 3 options:
 2. Command Line Interface (CLI) (protected by access keys)
 3. Software Development Kit (SDK) (protected by access keys)
 
+AWS CloudShell — cloud terminal, where you can run your CLI commands,
+upload and download files.
+
 Users manage their own access keys.
 Access Key ~= username
 Secret Key ~= password
@@ -147,9 +150,50 @@ You can assign them to AWS services using policies.
 For example, Inline Policy —
 1:1 mapping permissions only for 1 user / service and nobody else.
 
+### IAM Roles for Services
+Some AWS service will need to perform actions on your behalf.
+To do so, we need to assign **permissions** to AWS services (trusted entity) with IAM roles.
+Most common use-cases are EC2 and Lambda.
+
 Permissions, which are not explicitly allowed -> they are **implicitly denied**.
-Policies can be **Identity-based** or **Resource-based**.
 Everything can be setup in the IAM dashboard.
+
+### IAM Security Tools
+<br>
+IAM Credentials Report (account-level) -
+a report that lists all your account's users and the status of their various credentials.
+<br>
+IAM Access Advisor (user-level) -
+shows the service permissions granted to a user and when those services were last accessed.
+You can use this information to revise your policies.
+
+### Shared Responsibility Model for IAM
+AWS is responsible for Infrastructure (global network security),
+configuration and vulnerability analysis, and compliance validation.
+
+While, you are responsible for managing Users, Groups, Roles, Policies management, and monitoring.
+Also, MFA enabling, key rotation, usage of IAM tools for applying appropriate permissions,
+analyze access patterns and review permissions.
+
+### IAM Summary
+<br>
+**Users**: mapped to a physical user, has a password for AWS Console
+<br>
+**Groups**: contains users only
+<br>
+**Policies**: JSON document that outlines permissions for users or groups
+<br>
+**Roles**: for AWS services, such as EC2 or Lambda
+<br>
+**Security**: MFA + Password Policy
+<br>
+**AWS CLI**: manage your AWS services using the command-line
+<br>
+**AWS SDK**: manage your AWS services using a programming language
+<br>
+**Access Keys**: access AWS using the CLI or SDK
+<br>
+**Audit**: IAM Credential Reports and IAM Access Advisor
 
 ## AWS S3
 
