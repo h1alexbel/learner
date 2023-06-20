@@ -1,15 +1,7 @@
 # AWS
-AWS Management Console
-AWS CLI
-AWS SDK or REST APIs
 
-Each resource has it unique ARN (Amazon Resource Name):
+Each resource has it unique **ARN** (Amazon Resource Name):
 `arn:aws:s3::..`
-
-Output format can be `text`, `json`, or `yaml`.
-
-## AWS REST API
-SigV4 was quite challenging, that's why SDK are existing.
 
 ## AWS IAM
 IAM — Identity and Access Management.
@@ -132,6 +124,7 @@ To access AWS, you have 3 options:
 2. Command Line Interface (CLI) (protected by access keys)
 3. Software Development Kit (SDK) (protected by access keys)
 
+With CLI, output format can be `text`, `json`, or `yaml`.
 AWS CloudShell — cloud terminal, where you can run your CLI commands,
 upload and download files.
 
@@ -194,6 +187,106 @@ analyze access patterns and review permissions.
 **Access Keys**: access AWS using the CLI or SDK
 <br>
 **Audit**: IAM Credential Reports and IAM Access Advisor
+
+## AWS Budget
+
+In AWS, you can create budgets for an account and track billing per service.
+
+## AWS EC2
+
+Elastic Compute Cloud (EC2), Infrastructure as a Service.
+It mainly consists of:
+1. Renting virtual machines (EC2)
+2. Storing data on virtual drives (EBS)
+3. Distributing a load across machines (ELB)
+4. Scaling the services using an auto-scaling group (ASG)
+
+EC2 sizing and configuration options:
+1. OS: Linux, Windows, macOS
+2. CPU
+3. RAM
+4. Storage: EBS (Elastic Block Storage), EFS (Elastic File Storage), hardware (EC2 Instance Store)
+5. Network: speed of the card, Public IP address
+6. Firewall rules: security group 
+7. Bootstrap script (on machine launch): EC2 User Data
+
+Each EC2 User Data script runs from root user (`sudo` required).
+
+`t2.micro` (1 vCPU, 1 GB) is part of the AWS free tier (up to 750 hours per month).
+
+### EC2 Configuration
+
+1. Amazon Machine Image (**AMI**) - is a template that contains the software configuration
+   (operating system, application server, and application) required to launch your instance.
+   Base image can be: Amazon Linux, Ubuntu, Windows, macOS, Red Hat, etc.
+2. Instance type
+3. Key pair for SSH connection
+4. Storage volumes
+5. Advanced: Spot instances, Tenancy, User Data script, etc.
+
+After EC2 instance stops, Public IP will be **resigned**.
+
+### Instance Types
+
+AWS EC2 Instance Types:
+1. **General Purpose**, Great diversity of workloads such as web servers or code repos.
+   Balance between: Compute, Memory, Networking.
+2. **Compute Optimized**, Great for compute-intensive tasks that require high-performance processors:
+   Batch processing workloads, Media transcoding, High performance computing (HPC),
+   Scientific modeling, Machine Learning, Dedicated gaming servers.
+3. **Memory Optimized**, Fast performance for workloads that process large data sets in memory.
+   Use-cases: High performance databases, Distributed web scale cache stores,
+   In-memory databases optimized for BI (business intelligence), Real-time processing of big unstructured data.
+4. Storage Optimized, Great for storage-intensive tasks that require high,
+   sequential read and write access to large data sets on local storage.
+   Use-cases: High frequency online transaction processing (OLTP) systems,
+   Relational and NoSQL databases, Cache for in-memory database,
+   Data warehousing applications, Distributed file systems.
+
+AWS has the following naming convention: `m5.2xlarge`, where
+
+
+m: instance class
+<br>
+5: generation (AWS improves them over time)
+<br>
+2xlarge: size withing the instance class
+
+### Security Groups
+
+Security groups control how traffic is allowed into or out of our EC2 instances.
+Security groups only contain `allow` rules.
+Security groups rules can be reference by IP or by security group.
+
+Security groups are acting as a 'firewall' on EC2 instances.
+They regulate port accessing, IP ranges (IPv4 and IPv6),
+inbound network (from others to the instance),
+outbound network (from the instance to others).
+
+Any **timeout is cause of EC2 Security Groups**. 
+
+![ec2-security-groups.png](ec2-security-groups.png)
+
+Security groups can be attached to multiple instances.
+By default, all inbound traffic is `blocked` by default.
+By default, all outbound traffic is `authorised` by default.
+
+Referencing other security groups:
+![ec2-security-groups-ref.png](ec2-security-groups-ref.png)
+
+Classic Ports to know:
+<br>
+22 = SSH (Secure Shell) - log into a Linux instance
+<br>
+21 = FTP (File Transfer Protocol) - upload files into file share
+<br>
+22 = SFTP (Secure File Transfer Protocol) - upload files using SSH
+<br>
+80 = HTTP - access unsecured websites
+<br>
+443 = HTTPS - access secured websites
+<br>
+3389 = RDP (Remote Desktop Protocol) - log into a Windows instance
 
 ## AWS S3
 
