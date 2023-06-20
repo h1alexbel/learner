@@ -247,7 +247,8 @@ Each EC2 User Data script runs from root user (`sudo` required).
 4. Storage volumes
 5. Advanced: Spot instances, Tenancy, User Data script, etc.
 
-After EC2 instance stops, Public IP will be **resigned**.
+After EC2 instance stops, Public IP can be **resigned**.
+`0.0.0.0/0`- CIDR block of 'everywhere.'
 
 ### Instance Types
 
@@ -310,6 +311,64 @@ Classic Ports to know:
 443 = HTTPS - access secured websites
 <br>
 3389 = RDP (Remote Desktop Protocol) - log into a Windows instance
+
+### EC2 Connection
+
+Using SSH:
+
+```shell
+ssh -i certi.pem ec2-user@<public ip>
+```
+
+If you have an error: `UNPROTECTED PRIVATE KEY FILE` -> 
+
+```shell
+chmod 0400 certi.pem
+```
+
+Using EC2 Instance Connect:
+In the Management Console, you can start a new browser session with connection to your EC2.
+
+### EC2 Instances Purchasing Options
+
+**On-Demand Instances** — short workload, predictable pricing, pay by uptime second.
+Pay for what you use:
+1. Linux or Windows — billing per second, after the first minute
+2. All other OSs — billing per hour
+Has the **highest cost but no upfront payment**, no long-term commitment.
+<br>
+**Reserved** (1 and 3 years):
+   1. Reserved Instances — long workloads, you specify `Instance Type`, `Region`, `Tenancy`, `OS`.
+   2. Convertible Reserved Instances — long workloads with flexible instances,
+      you can change the `Instance Type`, `Region`, `Tenancy`, `OS`,
+      less discount comparing to Reserved Instances.
+Good for databases.
+**Savings Plan** (1 and 3 years) — commitment to and amount of usage, long workload.
+Get a discount based on long-term usage (up to ~72%),
+usage beyond EC2 Savings Plan is billed at the On-Demand price.
+Locked to a specific instance family & AWS region (e.g., `M5` in `us-east-1`).
+But flexible across: Instance size (e.g., `m5.xlarge`, `m5.2xlarge`), and OS (e.g., Linux, Windows).
+<br>
+**Spot Instances** - short workloads, cheap, can lose instances (less reliable).
+Can get a discount of up to 90% compared to On-Demand.
+Instances that you **can 'lose'** at any point of time
+if your max price is less than the current spot price.
+**Useful for workloads that are resilient to failure.**
+**Not suitable for critical jobs or databases.**
+<br>
+**Dedicated Host** - book an entire physical server, control instance placement.
+A physical server with EC2 instance capacity fully dedicated to your use.
+Allows you to address compliance requirements and use your existing server-bound software licenses.
+Can be purchased using these options: On-Demand, Reserved.
+**The most expensive** option.
+<br>
+**Dedicated Instances** - no other customers will share your hardware.
+Instances **run on hardware that's dedicated to you.**
+May share hardware with other instances in the same account.
+No control instance placement (can move hardware after Stop / Start).
+<br>
+**Capacity Reservations** - reserve capacity in a specific AZ for any duration.
+You can reserve it with a full price, even you don't stay in it.
 
 ## AWS S3
 
