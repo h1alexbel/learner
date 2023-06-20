@@ -336,7 +336,7 @@ Pay for what you use:
 1. Linux or Windows — billing per second, after the first minute
 2. All other OSs — billing per hour
 Has the **highest cost but no upfront payment**, no long-term commitment.
-<br>
+
 **Reserved** (1 and 3 years):
    1. Reserved Instances — long workloads, you specify `Instance Type`, `Region`, `Tenancy`, `OS`.
    2. Convertible Reserved Instances — long workloads with flexible instances,
@@ -348,7 +348,7 @@ Get a discount based on long-term usage (up to ~72%),
 usage beyond EC2 Savings Plan is billed at the On-Demand price.
 Locked to a specific instance family & AWS region (e.g., `M5` in `us-east-1`).
 But flexible across: Instance size (e.g., `m5.xlarge`, `m5.2xlarge`), and OS (e.g., Linux, Windows).
-<br>
+
 **Spot Instances** - short workloads, cheap, can lose instances (less reliable).
 Can get a discount of up to 90% compared to On-Demand.
 Instances that you **can 'lose'** at any point of time
