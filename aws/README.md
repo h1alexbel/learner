@@ -176,7 +176,7 @@ Also, MFA enabling, key rotation, usage of IAM tools for applying appropriate pe
 analyze access patterns and review permissions.
 
 ### IAM Summary
-<br>
+
 **Users**: mapped to a physical user, has a password for AWS Console
 <br>
 **Groups**: contains users only
