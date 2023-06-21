@@ -370,6 +370,18 @@ No control instance placement (can move hardware after Stop / Start).
 **Capacity Reservations** - reserve capacity in a specific AZ for any duration.
 You can reserve it with a full price, even you don't stay in it.
 
+### EC2 Instance Storage Options
+
+Elastic Block Store (EBS) Volume
+is a **network drive** you can attach to EC2 instances while they run.
+It allows instances to persist data, even after their termination.
+They can only be **mounted to one instance at a time**.
+They are **bound to specific AZ**.
+
+EBS Delete on Termination attribute:
+by default, enabled in the EBS Root, and disabled in any other attached EBS.
+It can be controlled by the AWS Management Console/AWS CLI.
+
 ## AWS S3
 
 AWS type of storages:
