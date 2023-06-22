@@ -523,6 +523,43 @@ Amazon Machine Image (AMI) is a customization of an EC2 instance **by reusing EC
 
 ![ami-cp.png](ami-cp.png)
 
+## Load Balancing on AWS
+
+Horizontal scaling implies distributed systems.
+Using horizontal scaling, we need load balancing between them.
+Scale out — increase number of instances.
+Scale in - decrease number of instances.
+
+High availability means running your application/system in at least 2 data centers (AZs).
+The goal of high availability is to survive a data center loss.
+
+Managing horizontal scaling on AWS:
+1. Auto Scaling Group
+2. Load Balancer
+
+Managing high availability on AWS:
+1. Run instances for the same application across multi AZ.
+
+Why use a load balancer:
+1. Spread a load across multiple downstream instances
+2. Explore a single point of access (DNS) to your application
+3. Health-checking instances
+4. Separate public traffic from private traffic
+
+### Elastic Load Balancer
+
+An Elastic Load Balancer is a **managed load balancer**.
+
+Types of load balancers on AWS:
+1. **Classic Load Balancer** (CLB) — 2009, HTTP, HTTPS, TCP, SSL, **Deprecated**
+2. **Application Load Balancer** (ALB) — 2016, HTTP, HTTPS, WebSocket
+3. **Network Load Balancer** (NLB) — 2017, TCP, TLS, UDP
+4. **Gateway Load Balancer** (GWLB) - 2020, IP Protocol (layer 3 of an OSI model)
+
+some load balancers can be setup as internal (private) or external (public) ELBs.
+
+EC2 instances should only **allow traffic only coming directly from load balancers**.
+
 ## AWS S3
 
 AWS type of storages:
