@@ -560,6 +560,41 @@ some load balancers can be setup as internal (private) or external (public) ELBs
 
 EC2 instances should only **allow traffic only coming directly from load balancers**.
 
+#### Application Load Balancer
+
+Application Load Balancers (ALB) are Layer 7 (HTTP).
+
+Use-cases:
+1. Load balancing to multiple HTTP applications across machines (target groups)
+2. Load balancing to multiple applications on the same machine
+
+Support for HTTP/2 and WebSocket.
+Also supports redirects (e.g., from HTTP to HTTPS).
+
+Routing tables to different target groups:
+1. Routing based on a path in URL (`example.com/users` and `example.com/posts`)
+2. Routing based on hostname in URL (`one.example.com` and `another.example.com`)
+3. Routing based on Query String, Headers (`example.com/users?id=123&order=false`)
+
+ALBs are a great fit for microservices, container-based application.
+We can have one ALB in front of many applications.
+
+Target Groups:
+1. EC2 Instances (can be managed by an Auto Scaling Group) - HTTP
+2. ECS Tasks (managed by ECS itself) - HTTP
+3. Lambda Functions — HTTP request is translated into a JSON event
+4. IP Addresses - must be private IPs
+
+ALB can route to multiple target groups.
+Health checks are at the target group level.
+
+![alb.png](alb.png)
+
+ALB gives you fixed hostname (`xxx.region.elb.amazonaws.com`).
+The application servers **don't see the IP of the client directly**,
+real IP of the client is stored in `X-Forwarded-For` header.
+We can also get Port (`X-Forwarded-Port`), and Proto (`X-Forwarded-Proto`).
+
 ## AWS S3
 
 AWS type of storages:
