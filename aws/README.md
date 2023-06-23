@@ -876,6 +876,63 @@ RDS has templates for database creation:
 2. Password and IAM database authentication
 3. Password and Kerberos authentication
 
+## AWS Aurora
+
+Aurora is a proprietary database technology from AWS.
+**PostgreSQL and MySQL are both supported as Aurora database** (drivers are fully compatible).
+Aurora is 'cloud optimized' and claims 5x performance improvement over MySQL on RDS,
+over 3x performance of PostgreSQL on RDS.
+
+Aurora's storage automatically grows in increments of 10GB, up to 128TB.
+Aurora can have up to 15 replicas,
+and the replication process is faster than MySQL (sub 10ms replica lag).
+Failover ins Aurora is instantaneous, it's highly available natively.
+Aurora costs more than RDS (20% more) - but is more efficient.
+
+6 copies of your data across 3 AZ:
+1. 4 copies out of 6 needed for writes
+2. 3 copies out of 6 needed for reads
+3. Self-healing with peer-to-peer replication
+
+Master-Slave replication.
+Fast master failover for master in less than 30 secs.
+
+![aurora-cluster.png](aurora-cluster.png)
+
+Also, Aurora supports **Backtrack feature: restore data at any point of time without using backups**.
+
+#### RDS & Aurora Security
+
+`At-rest encryption`:
+1. Database master and replicas encryption using AWS KMS must be defined as launch time.
+2. **If the master is not encrypted, the read replicas cannot be encrypted.**
+3. To encrypt an unencrypted database, go through a database snapshot and restore as encrypted.
+
+`In-flight encryption`: TLS-ready by default, use the AWS TLS root certificates client-side.
+<br>
+`IAM Authentication`: IAM roles to connect to your database (instead of username and password).
+<br>
+`Security Groups`: Control Network access to your RDS / Aurora DB.
+No SSH available except on RDS Custom.
+Audit Logs can be enabled and sent to CloudWatch Logs for longer retention.
+
+#### RDS Proxy
+
+Fully managed database proxy for RDS.
+Allow apps to pool and share database connection established with the database.
+**RDS Proxy is used to minimize and pool connections to your database.**
+**Improving database efficiency by reducing
+the stress on database resources** (e.g., CPU, RAM) and minimize open connections (and timeouts).
+Serverless, autoscaling, highly available (Multi-AZ).
+**Reduced RDS and Aurora failover time by up `66%`.**
+
+**Enforce IAM Authentication for a database**,
+and securely store credentials in AWS Secrets Manager.
+
+**RDS Proxy is never publicly accessible (must be accessed from VPC)**.
+
+![rds-proxy-with-lambdas.png](rds-proxy-with-lambdas.png)
+
 ## AWS S3
 
 AWS type of storages:
