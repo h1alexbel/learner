@@ -1015,6 +1015,69 @@ MemoryDB — fully Redis compatible, durable, in-memory database service.
 Ultra-fast performance with over 160 million requests/sec.
 Durable in-memory data storage with Multi-AZ transactional log.
 
+## AWS Route 53
+
+### DNS
+
+Domain Name System (DNS) which translates the human
+friendly hostnames into the machine IP addresses.
+
+DNS is the backbone of the internet.
+DNS uses hierarchical naming structure:
+`.com`
+`example.com`
+`api.example.com`
+
+DNS Terminologies:
+1. **Domain Registrar**: AWS Route53, GoDaddy, etc.
+2. **DNS Records**: `A`, `AAAA`, `CNAME`, `NS`, etc.
+3. **Zone File**: DNS records
+4. **Name Server**: resolves DNS queries (Authoritative or Non-Authoritative)
+5. **Top Level Domain (TLD)**: `.com`, `.us`, `.in`, `.org`, etc.
+6. **Second Level Domain (SLD)**: `google.com`, `amazon.com`
+
+**FQDN (Fully Qualified Domain Name)**: `api.of.example.com`
+
+![dns.png](dns.png)
+
+AWS Route 53 — highly available, scalable, fully managed and **Authoritative DNS**.
+**Authoritative means that the customer can update the DNS records.**
+Route 53 is a Domain Registrar.
+
+The only AWS service which provides `100%` availability SLA.
+53 means traditional DNS port.
+
+Route 53 Records:
+1. Domain/subdomain name: example.com
+2. Record type: A or AAAA
+3. Value: 12.34.56.78
+4. Routing Policy: how Route 53 responds to queries
+5. TTL: amount of time the record cached at DNS Resolvers
+
+Route 53 supports the following DNS record types:
+`A`, `AAAA`, `CNAME`, `NS`
+and
+`CAA`, `DS`, `MX`, `NAPTR`, `PTR`, `SOA`, `TXT`, `SPF`, `SRV`
+
+#### Record Types
+1. `A` - maps a hostname to IPv4
+2. `AAAA` - maps a hostname to IPv6
+3. `CNAME` - maps a hostname to another hostname
+   (The target is a domain name which must have an `A` or `AAAA` record)
+   **You can't create a CNAME record for the top node of a DNS namespace (Zone Apex)**:
+   you can't create `CNAME` for `example.com`, but you can create it for `api.example.com`
+4. `NS` - name servers for the hosted zone
+
+#### Hosted Zones
+
+A container for records that define how to route traffic to a domain and its subdomains.
+
+**Public Hosted Zones**: contain records that specify how to route traffic on the internet (public domain name). 
+**Private Hosted Zones**: contain records that specify how you route traffic within one or more VPCs
+(private domain names).
+
+![zones.png](zones.png)
+
 ## AWS S3
 
 AWS type of storages:
