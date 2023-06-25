@@ -1138,6 +1138,7 @@ Use-case:
 2. testing a new version of applications
 Assign a weight of 0 to a record to stop sending traffic to a resource.
 **If all records have a weight of 0, then all records will be returned equally**.
+
 ![weighted.png](weighted.png)
 <br>
 **Latency-based**: 
