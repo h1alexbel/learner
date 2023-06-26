@@ -1121,6 +1121,7 @@ Route 53 supports the following Routing Policies:
 5. Geolocation
 6. Multi-Value Answer
 7. Geo-proximity (using Route 53 Traffic Flow feature)
+8. IP-based
 
 **Simple**:
 Typically, route traffic to a single resource.
@@ -1152,6 +1153,50 @@ Latency-based Routing Policy can be associated with Health Checks (has a failove
 main target associated with a health checks, if the main target becomes unhealthy - 
 then Route 53 is going to automatically failover to disaster recovery target (passive becomes active).
 ![failover.png](failover.png)
+<br>
+**Geolocation**: routing based on user location.
+Use-cases: website localization, restrict content distribution, load balancing, etc.
+Should create a 'Default' record in case there is no match.
+It can be associated with Health Checks.
+<br>
+**Geo-proximity routing**:
+route traffic to your resources based on the geographic location of users and resources.
+**Ability to shift more traffic to resources based on the defined bias**.
+Resources can be:
+1. AWS resources with a specified region
+2. Non-AWS resources with specified Latitude and Longitude
+You must use Route 53 Traffic Flow to use this feature.
+
+Use-case:
+1. Shift more traffic to specific region.
+
+`Traffic Flow` is a visual editor for setup Route 53 routing.
+<br>
+**IP-based**: routing based on clients' IP addresses.
+You provide a list of CIDRs for your clients and the corresponding endpoints/locations.
+Use-case:
+1. Optimize performance, reduce network costs
+
+![ip.png](ip.png)
+<br>
+**Multi-value**: **use when routing traffic to multiple resources**.
+Route 53 return multiple values/resources.
+This Multi-value routing policy can be associated with Health Checks.
+Up to 8 healthy records are returned for each Multi-Value Query.
+Use-case: for implementing **client-side load balancing**.
+
+#### Domain Registrar vs. DNS Service
+You can buy or register your domain name
+with a Domain Registrar by paying annual charges (e.g., GoDaddy, Amazon Registrar).
+The Domain Registrar usually provides you
+with a DNS service to manage your DNS records.
+
+You can register/buy domain on Domain Registrar (GoDaddy) and
+manage its records using DNS Service (Route 53).
+To do it:
+1. Create a Public Hosted Zone in Route 53
+2. Update `NS` Records on 3rd party website to use **Route 53 Name Servers**.
+
 
 #### Health Checks
 
