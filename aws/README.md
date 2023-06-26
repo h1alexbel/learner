@@ -1308,19 +1308,96 @@ VPC Endpoint Interface: all the rest services
 ![wordpress.png](wordpress.png)
 
 ## AWS S3
+S3 — Simple Storage Service.
+**Distributed Object Storage**.
 
-AWS type of storages:
-1. Amazon Elastic Block Storage -> General Purpose SSD, IOPS SSD, Throughput Optimized HDD, Cold HDD
-2. Amazon Elastic File Storage
-3. Object Storage -> S3 Standard, Standard-IA, One-Zone-IA, Glacier, Glacier Archive
-
-AWS S3 use-cases:
+Use-case:
 1. Bucket + content
 2. Web-site hosting
 3. Data Lake
-For enabling web-site hosting via S3, you need to expose `GetObject` permission to **public**.
+4. Software Delivery
+
+S3 stores files, called **objects** into **buckets**.
+**Buckets must have a globally unique name** (across all regions and accounts).
+**Buckets are defined at the region level**.
+
+Naming convention:
+1. No uppercase
+2. No underscore
+3. 3-63 chars long
+4. Not an IP
+5. Must start with a lower case letter or number
+6. Must NOT start with the prefix `xn--`
+7. Must NOT end with the suffix `-s3alias`
+
+### S3 Objects
+
+Objects are files stored in S3.
+**The key is the full path to the object**: `s3://my-bucket/my-file.txt`.
+The key is composed of **prefix** and **object name**. 
+
+1. Object values are the content of the **body**:
+   Max object size is 5TB (~5000 GB).
+   When upload an object that has size more than 5GB, **use multipart upload**.
+2. **Metadata**
+3. Tags
+4. Tags
+5. Version ID (if versioning is enabled)
+
+S3 presigned URL vs. Public URL:
+**Public URL** does not have security tokens, while **presigned URL has security token and signature**.
+So, with a presigned URL object can be viewed, 
+while with a Public URL, by default object can not be viewed.
+
+### S3 Security
+
+**User-based**: 
+1. **IAM policies**: which API calls should be allowed for a specific user from IAM.
+
+**Resource-based**:
+1. **Bucket policies**: bucket wide rules from the S3 console — allows cross-account.
+2. **Object Access Control List (ACL)** — finer grain (can be disabled).
+3. **Bucket Access Control List (ACL)** — less common (can be disabled).
+
+IAM principal can access an S3 object if:
+The user **IAM permissions ALLOW  it** `OR` **resource policy ALLOWS it**
+`AND` there's no explicit `DENY`.
+
+Encryption: encrypt objects in S3 using encryption keys.
+For enabling public URL, you need to expose `GetObject` permission to **public**.
+
+```json
+{
+   "Version": "2012-10-17",
+   "Statement": [
+      {
+         "Sid": "GetObjectPublicly",
+         "Effect": "Allow",
+         "Principal": "*",
+         "Action": [
+            "s3:GetObject"
+         ],
+         "Resource": "arn:aws:s3:::DOC-EXAMPLE-BUCKET/*"
+      }
+   ]
+}
+```
+
+![s3-public.png](s3-public.png)
+
+With IAM permissions to the IAM user:
+![s3-iam.png](s3-iam.png)
+
+With Roles:
+![s3-roles.png](s3-roles.png)
+
+**Bucket Block Public Access**:
+Extra layer of S3 security.
+These settings were created to prevent company data leaks.
+Even, if we give it public access, bucket will be private.
+
 With Data Lake use-case you can query objects.
-Also, AWS S3 supports events.
+Also, AWS S3 supports events, mainly for integration purposes.
 
 ## AWS DynamoDB
 
