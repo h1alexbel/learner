@@ -1416,6 +1416,7 @@ You can version your files in S3.
 **It is enabled at the bucket level**.
 
 The Same key overwriting will change the version to 1, 2, 3, etc.
+<br>
 **It is the best practice to version objects in bucket**:
 1. Protect against unintended deletes (ability to restore version)
 2. Easy rollback to a previous version
@@ -1442,9 +1443,52 @@ For delete operations:
 If `bucket-1` has replication to `bucket-2`, which has replication into `bucket-3`:
 **then objects created in `bucket-1` are not replicated to `bucket-3`**.
 
+**By default, delete markers are not replicated**, but it can be enabled.
+**Deletes are not replicated, only delete markers**.
+
 Use-case:
 1. CRR — compliance, lower latency access, replication across accounts
 2. SRR — log aggregation, live replication between production and test accounts.
+
+#### S3 Storage Classes
+
+1. S3 Standard - General Purpose: 99.99% availability,
+   used for frequently accessed data, low latency and high throughput,
+   sustain 2 concurrent facility failures, no retrieval charges.
+   Use-case: **Big Data analytics, mobile and gaming applications, content distribution, etc**.
+2. S3 Standard-Infrequent Access (IA): 99.9% availability, used for data that is less frequently accessed,
+   but requires rapid access when needed lower cost than S3 standard.
+   Use-case: **Disaster Recovery, backups**.
+3. S3 One Zone-Infrequent Access: 99.5% availability, high durability in a single AZ,
+   data lost when AZ is destroyed.
+   Use-case: **Secondary backups of on-premise data, or data you can recreate**.
+4. S3 Glacier Instant Retrieval: **Low cost object storage meant for archiving / backup**;
+   pricing model: price for storage + object retrieval cost.
+   Instant Retrieval - millisecond retrieval, great for data accessed once a quarter;
+   minimum storage duration of 90 days.
+5. S3 Glacier Flexible Retrieval: expedited (1 to 5 mins),
+   standard (3 to 5 hours), bulk (5 to 12 hours) — free;
+   minimum storage duration of 90 days.
+6. S3 Glacier Deep Archive: **for long term storage**;
+   retrieval: standard (12 hours), bulk (48 hours), minimum storage duration of 180 days. 
+7. S3 Intelligent Tiering: small monthly monitoring and **auto-tiering fee**,
+   **moves objects automatically between Access Tiers based on usage**,
+   there are no retrieval charges in S3 Intelligent-Tiering.
+   Tiers:
+   1. Frequent Access Tier (automatic): default tier.
+   2. Infrequent Access Tier (automatic): objects not accessed for 30 days.
+   3. Archive Instant Access Tier (automatic): objects not accessed for 90 days.
+   4. Archive Access Tier (optional, configurable): objects not accessed from 90 days to 700+ days.
+   5. Deep Archive Access Tier (optional, configurable): objects not accessed from 180 days to 700+ days.
+
+Objects can be moved between classes manually or using **S3 Lifecycle configurations**.
+
+**S3 has very high durability (99.99999999999%, 11 9's) of objects across multiple AZ**.
+If you store 10,000,000 objects with S3,
+you can on averagely expect loss of a 1 object every 10,000 years.
+This durability is the same for all storage classes.
+
+S3 Standard has 99.99% availability -> not available 53 minutes a year.
 
 ## AWS DynamoDB
 
