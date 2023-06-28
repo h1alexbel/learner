@@ -1399,6 +1399,53 @@ Even, if we give it public access, bucket will be private.
 With Data Lake use-case you can query objects.
 Also, AWS S3 supports events, mainly for integration purposes.
 
+#### S3 Static Website Hosting
+
+S3 can host static websites and have them accessible on the internet.
+
+The website URL will be (depending on the Region):
+`http://bucket-name.s3-website-aws-region.amazonaws.com`
+OR
+`http://bucket-name.s3-website.aws-region.amazonaws.com`
+
+To make it accessible to the users, **S3 bucket must be public**.
+
+#### S3 Versioning
+
+You can version your files in S3.
+**It is enabled at the bucket level**.
+
+The Same key overwriting will change the version to 1, 2, 3, etc.
+**It is the best practice to version objects in bucket**:
+1. Protect against unintended deletes (ability to restore version)
+2. Easy rollback to a previous version
+
+**Any file that is not versioned prior to enabling versioning will have version 'null'**.
+**Version suspending does not delete the previous version**.
+
+#### S3 Replication (CRR and SRR)
+
+Cross-Region Replication (CRR) and Same Region Replication (SRR).
+
+**Must enable Versioning in source and destination buckets**.
+Buckets can be in different AWS accounts.
+Copying is asynchronous.
+Must give proper IAM permissions to S3.
+
+After you enable Replication, **only new objects are replicated**.
+Existing objects can be replicated using **S3 Batch Replication**.
+For delete operations:
+1. Can replicate delete markers from source to the target.
+2. Deletions with a Version ID are not replicated
+
+**Also, there is no 'chaining' replication**:
+If `bucket-1` has replication to `bucket-2`, which has replication into `bucket-3`:
+**then objects created in `bucket-1` are not replicated to `bucket-3`**.
+
+Use-case:
+1. CRR — compliance, lower latency access, replication across accounts
+2. SRR — log aggregation, live replication between production and test accounts.
+
 ## AWS DynamoDB
 
 Item key consists of:
