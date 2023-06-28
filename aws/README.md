@@ -144,8 +144,17 @@ YubiKey by Yubico (3rd party) and other keychains.
 ### Accessing the AWS
 To access AWS, you have 3 options:
 1. Management Console (protected by password + MFA)
-2. Command Line Interface (CLI) (protected by access keys)
+2. Command Line Interface (CLI) (protected by access keys), Python runtime
 3. Software Development Kit (SDK) (protected by access keys)
+4. AWS API
+
+With AWS API, you must sign the request using access and secret keys,
+so that AWS can identify you (except some S3 requests).
+You should use **Signature v4 (SigV4)** for request signing:
+1. HTTP Header option (signature in Authorization header)
+2. Query String option (signature in X-Amz-Signature)
+
+If you are using CLI or SDK, the requests are signed for you.
 
 With CLI, output format can be `text`, `json`, or `yaml`.
 AWS CloudShell — cloud terminal, where you can run your CLI commands,
@@ -159,7 +168,31 @@ Configuration stored in `.aws/config`.
 Credentials are stored in `.aws/credentials`.
 You can give a name for your account with profile alias.
 In `.aws/credentials` you can specify [$profile] node on top of `ACCESS_KEY` and `SECRET_KEY`.
+Many AWS credentials can be managed using profiles.
 In AWS CLI you can choose the profile using `--profile`.
+
+**If you don't specify a default region, then `us-east-1` will be chosen by default**.
+
+#### Credentials Provider Chain
+
+CLI:
+1. Command line options `--region`, `--output`, `--profile`
+2. Environment variables `AWS_ACCESS_KEY_ID`, `AWS_SECRET_KEY_ID`, `AWS_SESSION_TOKEN`
+3. `~/.aws/credentials`
+4. `~/.aws/config`
+5. Container credentials for ECS tasks
+6. Instance profile credentials for EC2 Instance Profiles
+
+SDK:
+1. system properties
+2. Environment variables
+3. `~/.aws/credentials`
+4. ECS container credentials
+5. Instance profile credentials for EC2 Instance Profiles
+
+#### MFA with CLI
+
+To use MFA with CLI, you must create a temporary session token (run `STS GetSessionToken` API call).
 
 Each service has permissions.
 You can assign them to AWS services using policies.
@@ -173,6 +206,19 @@ Most common use-cases are EC2 and Lambda.
 
 Permissions, which are not explicitly allowed -> they are **implicitly denied**.
 Everything can be setup in the IAM dashboard.
+
+EC2 Instance Metadata (`IMDS`):
+EC2 Instance Metadata allows EC2 instances to learn about
+'themselves' without using an IAM Role for that purpose.
+You can retrieve the IMA Role name from the metadata,
+**but you cannot retrieve the IAM Policy**.
+
+`IMDSv1` vs. `IMDSv2`:
+IMDSv1 is accessing directly on endpoint: `http://169.254.169.254/latest/meta-data/`
+
+IMDSv2 is more secure and is done in two steps:
+1. Get Session Token (limited validity) using headers and PUT
+2. Use Session Token in IMDSv2 via using headers `-H "X-aws-ec2-metadata-token: $TOKEN"`
 
 ### IAM Security Tools
 <br>
@@ -190,6 +236,21 @@ configuration and vulnerability analysis, and compliance validation.
 While, you are responsible for managing Users, Groups, Roles, Policies management, and monitoring.
 Also, MFA enabling, key rotation, usage of IAM tools for applying appropriate permissions,
 analyze access patterns and review permissions.
+
+### AWS Limits and Quotas
+
+API Rate Limits:
+some services have a limit on the number of calls they can receive.
+For dealing with Intermittent Errors: implement **Exponential Backoff**.
+Use a case: `ThrottlingException`, `5xx` server errors.
+**Retry mechanism already included in AWS SDK API calls**.
+Must implement yourself if using the AWS API as-is or in specific cases.
+For dealing with Consistent Errors: request an API throttling limit increase.
+
+Service Quotas (Service Limits):
+e.g. running on-demand standard instances: 1152 CPUs.
+**You can request a service limit increase by opening a ticket**.
+You can request a service quota increase by using the **Service Quotas API**.
 
 ### IAM Summary
 
