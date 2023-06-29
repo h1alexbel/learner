@@ -1471,7 +1471,7 @@ OR
 
 To make it accessible to the users, **S3 bucket must be public**.
 
-#### S3 Versioning
+### S3 Versioning
 
 You can version your files in S3.
 **It is enabled at the bucket level**.
@@ -1511,7 +1511,14 @@ Use-case:
 1. CRR — compliance, lower latency access, replication across accounts
 2. SRR — log aggregation, live replication between production and test accounts.
 
-#### S3 Storage Classes
+### S3 Storage Classes
+
+**S3 has very high durability (99.99999999999%, 11 9's) of objects across multiple AZ**.
+If you store 10,000,000 objects with S3,
+you can on averagely expect loss of a 1 object every 10,000 years.
+This durability is the same for all storage classes.
+
+S3 Standard has 99.99% availability -> not available 53 minutes a year.
 
 1. S3 Standard - General Purpose: 99.99% availability,
    used for frequently accessed data, low latency and high throughput,
@@ -1544,12 +1551,90 @@ Use-case:
 
 Objects can be moved between classes manually or using **S3 Lifecycle configurations**.
 
-**S3 has very high durability (99.99999999999%, 11 9's) of objects across multiple AZ**.
-If you store 10,000,000 objects with S3,
-you can on averagely expect loss of a 1 object every 10,000 years.
-This durability is the same for all storage classes.
+S3 Lifecycle Rules:
 
-S3 Standard has 99.99% availability -> not available 53 minutes a year.
+1. Transition Actions: configure objects to transition to another storage class;
+   e.g., move objects to Standard IA class 60 days after creation,
+   move to Glacier for archiving after 6 months.
+2. Expiration Actions: configure objects to expire (delete) after some time:
+   e.g., Access log files can be set to delete after 365 days,
+   delete old versions of file (if versioning is enabled).
+
+Rules can be created for a certain prefix: `s3://mybucket/mp3/*`.
+Rules can be created for certain object tags: `Department: Finance`.
+
+#### S3 Analytics, Storage Class Analysis
+
+Help you decide when to transition objects to the right storage class.
+Recommendations for Standard and Standard-IA, but **does not work for One-Zone IA or Glacier**.
+Report is updated daily in `.csv` format.
+24 to 48 hours to start seeing data analysis.
+
+![s3-analytics.png](s3-analytics.png)
+
+### S3 Event Notifications
+
+`S3:ObjectCreated`, `S3:ObjectRemoved`, `S3:ObjectRestore`, `S3:Replication`.
+Object name filtering possible: `*.jpg`.
+Use-case:
+1. generate thumbnails of images uploaded to S3.
+
+Can create as many S3 events as desired.
+S3 event notifications typically deliver events in seconds,
+but sometimes it can take a minute or longer. 
+
+![s3-events.png](s3-events.png)
+
+**To send data to other services, S3 needs permissions a.k.a Resource Access Policy**.
+
+Using S3 events with **EventBridge**, you can propagate events to other services as destinations using:
+1. Advanced filtering with JSON rules
+2. Multiple destinations
+3. Archive events, Replay events, etc.
+
+![eventbridge.png](eventbridge.png)
+
+### S3 Baseline Performance
+
+S3 automatically scales to high request rates, latency 100-200ms.
+Your application can achieve at least
+**3,500 PUT/COPY/POST/DELETE or 5,500 GET/HEAD requests per second per prefix in a bucket**.
+
+Optimizing S3 performance:
+1. Multi-Part upload: recommended for files > 100 MB, must use it for files > 5 GB,
+   can help parallelize uploads (speed up transfers).
+   ![multi-part.png](multi-part.png)
+2. S3 Transfer Acceleration: increase transfer speed by transferring file
+   to an AWS edge location which will forward the data to the S3 bucket in the target region;
+   compatible with multi-part.
+   ![s3-ta.png](s3-ta.png)
+3. S3 Byte-Range Fetches: parallelize GETs by requesting specific byte ranges,
+   better resilience in case of failures, can be used to speed download.
+   ![byte-range-fetches.png](byte-range-fetches.png)
+
+#### S3 Server Side Filtering
+
+Retrieve less data using SQL by performing **server-side filtering**.
+
+![filtering.png](filtering.png)
+
+#### S3 Object Metadata, Tags
+
+When uploading an object, you can also assign metadata
+S3 User-Defined Object Metadata (K-V pairs):
+1. User-Defined metadata must start with `x-amz-meta`.
+
+S3 stores user-defined metadata keys in lowercase.
+Metadata can be retrieved while retrieving the object.
+
+S3 Object Tags are K-V pairs for objects in S3.
+1. **Useful for fine-grained permissions (only access specific objects with specific tags)**.
+2. **Useful for analytics purposes (using S3 Analytics to group by tags)**.
+<br>
+
+**You cannot search the object metadata or object tags**.
+
+**Instead, you must use an external DB as a search index such as DynamoDB**.
 
 ## AWS DynamoDB
 
