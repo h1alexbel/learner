@@ -1636,6 +1636,32 @@ S3 Object Tags are K-V pairs for objects in S3.
 
 **Instead, you must use an external DB as a search index such as DynamoDB**.
 
+### S3 Object Encryption
+
+Objects can be encrypted using one of 4 methods:
+1. **Server-Side Encryption** (SSE):
+   1. Server-Side Encryption with S3-Managed Keys (SSE-S3): managed by AWS - **Enabled by Default**.
+      Encryption type is **AES-256**, must set header `"x-amz-server-side-encryption":"AES256"`.
+   2. Server-Side Encryption with KMS Keys stored in AWS KMS (SSE-KMS): keys are managed by AWS KMS.
+      KMS advantages: **user control + audit key usage using CloudTrail**.
+      Must set header `"x-amz-server-side-encryption":"aws:kms"`.
+      You maybe impacted by the KMS limits:
+      KMS quota per second (5500, 10000, 30000 req/s based on the region).
+      **So, if you have very high throughput S3 bucket, you may go in throttling**.
+   3. Server-Side Encryption with Customer-Provided Keys (SSE-C): you are managing your own keys.
+      **S3 does not store the encryption key you provide**, **HTTPS must be used**.
+2. **Client-Side Encryption**: **Clients must encrypt data themselves before sending to S3**.
+   **Data decryption happens on the client side too**.
+
+Encryption in flight is also called SSL/TLS.
+S3 exposes two endpoints:
+1. HTTP — non encrypted
+2. HTTPS — encryption in flight, recommended
+
+Force Encryption in Transit: `aws:SecureTransport`:
+
+![secure.png](secure.png)
+   
 ## AWS DynamoDB
 
 Item key consists of:
