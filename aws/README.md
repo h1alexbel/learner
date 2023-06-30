@@ -1650,8 +1650,10 @@ Objects can be encrypted using one of 4 methods:
       **So, if you have very high throughput S3 bucket, you may go in throttling**.
    3. Server-Side Encryption with Customer-Provided Keys (SSE-C): you are managing your own keys.
       **S3 does not store the encryption key you provide**, **HTTPS must be used**.
+      **Supported only in CLI and SDK**.
 2. **Client-Side Encryption**: **Clients must encrypt data themselves before sending to S3**.
    **Data decryption happens on the client side too**.
+   **Don't need to indicate AWS that you are encrypting object at your own**.
 
 Encryption in flight is also called SSL/TLS.
 S3 exposes two endpoints:
@@ -1661,7 +1663,31 @@ S3 exposes two endpoints:
 Force Encryption in Transit: `aws:SecureTransport`:
 
 ![secure.png](secure.png)
-   
+
+**Bucket Policies are evaluated before 'Default Encryption'**.
+
+### S3 CORS
+
+**Cross-Origin Resource Sharing** (CORS).
+Origin = `protocol` + `host` + `port`.
+
+Web Browser based mechanism to allow requests 
+to other origins while visiting the main origin.
+
+**Same origin**: `http:example.com/app1` & `http:example.com/app2`.
+<br>
+**Different origins**: `http:www.example.com/app1` & `http:other.example.com/app1`.
+
+**The requests won't be fulfilled unless the other origin allows for the requests,
+using CORS Headers** (example: `Access-Control-Allow-Origin`).
+
+**If a client makes a cross-origin request on our S3 bucket,
+we need to enable the correct CORS headers using JSON configuration**.
+**In `AllowedOrigins` you must specify URL without last slash `'/'`**.
+You can allow specific origin or for * (all origins).
+
+![cors.png](cors.png)
+
 ## AWS DynamoDB
 
 Item key consists of:
