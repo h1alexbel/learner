@@ -1688,6 +1688,74 @@ You can allow specific origin or for * (all origins).
 
 ![cors.png](cors.png)
 
+#### S3 MFA Delete
+
+MFA Delete is extra protection to prevent deletion of object versions.
+
+MFA will be required to **permanently delete an object version**,
+or **suspend versioning on the bucket**.
+To use MFA Delete, you must **enable versioning on the bucket**.
+**Only the bucket owner (root account) can enable/disable MFA Delete**.
+
+#### S3 Access Logs
+
+For audit purpose, you may want to log all access to S3 buckets.
+Any request made to S3, from any account, authorized or denied,
+will be **logged into another S3 bucket**.
+
+The target bucket must be in the same AWS region.
+To the target bucket new policy will be issued,
+that allows `logging.s3.amazonaws.com` to do `s3:PutObject` on the target bucket. 
+
+**Do not set your logging bucket to be the monitored bucket**.
+**It will create a logging loop, and your bucket will grow exponentially**.
+
+![loop.png](loop.png)
+
+#### Pre-signed URLs
+
+Generate pre-signed URLs using the S3 Console, CLI, or SDK.
+
+URL expiration:
+1. S3 Console: 1m to 720m (12 hours)
+2. CLI and SDK: 3600s to 604800s (~168 hours)
+
+Users given a pre-signed URL inherit the permissions of the user that generated the URL.
+
+![presigned.png](presigned.png)
+
+Use-case:
+1. Allow only logged-in users to download a premium video from your S3 bucket.
+2. Allow an ever-changing list of users to download files by generating URLs dynamically.
+
+#### S3 Access Points
+
+S3 Access Points can simplify management for S3 buckets.
+Each Access Point has:
+1. **DNS name (Internet Origin or VPC Origin)**
+2. **An access point policy — to manage security at scale**
+
+To use VPC Origin, we must create a VPC endpoint to access the Access Point.
+The created VPC endpoint must allow access to the target bucket and Access Point.
+
+![points.png](points.png)
+
+#### S3 Object Lambda
+
+Use AWS Lambda Functions to change the object
+before it is retrieved by the client.
+On top of the bucket we want to modify, we should create
+**S3 Access Points** and **Object Lambda Access Points**.
+
+All Lambdas will access the bucket by contacting only **one** S3 Access Point.
+
+![object-lambda.png](object-lambda.png)
+
+Use-case:
+1. Redacting personally identifiable information for analytics or non-production environments.
+2. Converting data formats, e.g., XML to JSON.
+3. Resizing and watermarking images on the fly using caller-specific details.
+
 ## AWS DynamoDB
 
 Item key consists of:
