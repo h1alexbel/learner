@@ -1935,6 +1935,106 @@ Allows you to choose:
 
 ![cloudfront-realtime.png](cloudfront-realtime.png)
 
+## AWS ECS
+
+**ECS (Elastic Container Service) — Docker on AWS**.
+Docker images are stored in image repositories:
+Docker Hub (`https://hub.docker.com`) - public repository,
+**AWS ECR (Elastic Container Registry)** - private repository,
+but also has a public repository (ECR Public Gallery - `https://gallery.ecr.aws`).
+
+![container.png](container.png)
+
+Container Management on AWS:
+1. **ECS (Elastic Container Service)** — Amazon Container Platform.
+2. **EKS (Elastic Kubernetes Service)** - Managed Kubernetes service.
+3. **Fargate** — Amazon's serverless container platform, works with ECS and EKS.
+4. **ECR (Elastic Container Registry)** — image repository.
+
+Launch Docker containers on AWS means launch **ECS Tasks** on ECS Clusters.
+**ECS Cluster needs provisioned and maintained infrastructure based on launch type**.
+<br>
+Launch types:
+1. EC2 Launch Type: Each EC2 Instance must run ECS agent to register in the ECS Cluster.
+   **AWS take care of starting or stopping containers**.
+   ![ec2-ecs.png](ec2-ecs.png)
+2. Fargate Launch Type: **you don't provision the infrastructure (no EC2 Instances to manage)**,
+   it's all **serverless**.
+   You just create **task definitions**, AWS runs ECS Tasks based on the CPU/RAM you need.
+   To scale, the number of tasks can be increased.
+   **Easier to manage, comparing with EC2 Launch Type**.
+   ![fargate.png](fargate.png)
+
+### IAM Roles for ECS
+
+1. **EC2 Instance Profile (EC2 Launch Type only)**:
+   used by the ECS agent, makes API calls to ECS service,
+   send container logs to CloudWatch Logs, pull docker images from ECR,
+   reference sensitive data in Secrets Manager or SSM Parameter Store
+2. ECS Task Role:
+   allows each task to have a specific role
+![ecs-roles.png](ecs-roles.png)
+
+### Load Balancer Integrations
+
+![ecs-lb.png](ecs-lb.png)
+**Application Load Balancer** is supported and works for most use cases.
+<br>
+**Network Load Balancer** is recommended only for high throughput.
+<br>
+**Classic Load Balancer** is supported, but not recommended (no Fargate).
+
+### Data volumes
+
+Mount EFS file systems onto ECS tasks.
+**S3 cannot be mounted as a file system**.
+Works for both **EC2** and **Fargate** launch types.
+**Tasks running in any AZ will share the same data in the EFS**.
+
+`Fargate + EFs = Serverless`.
+
+Use-case:
+1. Persistent multi-AZ shared storage for your containers.
+
+### Service Auto Scaling
+
+Automatically increase/decrease the desired number of ECS Tasks.
+ECS Auto Scaling uses **AWS Application Auto Scaling**:
+1. ECS Service Average CPU Utilization
+2. ECS Service Average RAM Utilization
+3. ALB Request Count Per Target
+
+**Target Tracking** - scale based on target value for a specific CloudWatch Metric.
+<br>
+**Step Scaling** - scale based on a specific CloudWatch Alarm.
+<br>
+**Schedule Scaling** - scale based on a specified date/time.
+
+Fargate Auto Scaling is much easier to setup (because Serverless).
+<br>
+Auto scaling ECS based on EC2 Launch type:
+1. Auto Scaling Group
+2. ECS Cluster Capacity Provider: smarter one, recommended to use.
+
+### Rolling Updates
+
+When updating from v1 to v2,
+we can control how many tasks can be started and stopped, and in which order.
+
+![rolling-1.png](rolling-1.png)
+
+![rolling-50-100.png](rolling-50-100.png)
+
+![rolling-100-150.png](rolling-100-150.png)
+
+### Arc examples
+
+ECS Tasks invoked by Event Bridge:
+![event-tasks.png](event-tasks.png)
+
+ECS Tasks invoked by Event Bridge Schedule:
+![schedule-tasks.png](schedule-tasks.png)
+
 ## AWS DynamoDB
 
 Item key consists of:
