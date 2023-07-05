@@ -2167,6 +2167,7 @@ Worker Tier Environment does not have any client directly accessing EC2 Instance
 instead it can be SQS queue or SNS topic.
 
 Worker Environment can be combined with Web Environment.
+**Also, environments can be cloned**.
 
 ![modes.png](modes.png)
 
@@ -2183,10 +2184,70 @@ Worker Environment can be combined with Web Environment.
    so old application is still available, additional cost,
    additional batch is removed at the end of the deployment,
    **good for the production environment**.
-4. **Immutable**: spins up new instances in a new ASG,
-   deploys a version to these instances, and then swaps all the instances when ready.
-5. **Blue-Green**: create a new environment and switch over when ready.
-6. **Traffic splitting**: send a small percentage of traffic to new deployment.
+4. **Immutable**: spins up new instances in a new temporary ASG,
+   deploys a version to these instances, and then swaps all the instances when ready,
+   **high cost** since double capacity, **longest deployment**, but **quick rollback**.
+5. **Blue-Green**: **create a new environment** and switch over when ready,
+   not a direct feature of Elastic Beanstalk,
+   can be integrated with Route 53 Routing Policies.
+6. **Traffic splitting**: send a small percentage of traffic to new deployment,
+   used for **canary testing**, automated rollback.
+
+![blue-green.png](blue-green.png)
+
+Deployment Policy is inherited from the last artifact deployed.
+Deployment Policy can be overwritten.
+
+### CLI
+
+Additional CLI can be installed, called "EB cli", which makes working with Beanstalk from the CLI easier.
+
+Basic commands:
+`eb create`, `eb status`, `eb health`, `eb events`, `eb logs`, `eb deploy`, etc.
+
+It's helpful for your automated deployment pipelines.
+
+### Extensions
+
+**All the parameters set in the UI can be configured with code using files**.
+It must be in `.ebextensions/` directory in the root of source code.
+It must be in YAML/JSON format.
+It must have `.config` extension.
+Also, extensions have ability to add resources such as RDS, ElastiCache, DynamoDB, etc.
+Resources managed by `.ebextensions` get deleted if the environment goes away.
+
+Example: enable HTTPS on Load Balancer can be setup in `https-load-balancer.config`
+in `.ebextensions/` folder.
+
+**For running Jobs periodically, and asynchronously 
+we can use `cron.yaml` in combination with Worker Environments**.
+
+#### Lifecycle Policies
+
+Elastic Beanstalk can store at most 1000 application versions.
+All application versions are stored in S3.
+If you don't remove old versions, you won't be able to deploy anymore.
+For removal and environment management purposes, use a lifecycle policy:
+1. Based on time
+2. Based on space
+After version deletion, **you can set retention policy to retain or delete source bundle from S3**.
+**Versions that are currently used won't be deleted**.
+
+#### Migration
+
+**After creating an Elastic Beanstalk environment,
+you cannot change the Elastic Load Balancer type** (only configuration).
+To do this, you need to perform a migration:
+1. Create a new environment with the same configuration except LB (can't clone).
+2. Deploy your application onto the new environment
+3. Shift traffic to the new environment: `CNAME` swap or Route 53 update.
+
+RDS can be provisioned with Elastic Beanstalk, which is great for dev/testing.
+This is not a good option for production environment,
+since a database will be connected to the Elastic Beanstalk environment lifecycle.
+The best way is to separate database and beanstalk environment.
+**It is highly recommended to delete the associated CloudFormation
+stack after deleting an environment**.
 
 ## AWS DynamoDB
 
