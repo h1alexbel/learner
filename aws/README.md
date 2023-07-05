@@ -2143,6 +2143,51 @@ Support of:
 3. FSx for Lustre
 4. FSx for NetApp ONTAP
 
+## AWS Elastic Beanstalk
+
+**Elastic Beanstalk is a developer centric view of deploying an application on AWS**.
+Just the application code is the responsibility of the developer.
+Elastic Beanstalk **uses CloudFormation to deploy infrastructure stacks**.
+
+Beanstalk is free, but you pay for the underlying instances.
+<br>
+**Components**:
+1. Application: collection fo Elastic Beanstalk components (environments, versions, configurations).
+2. Application Version.
+3. Environment
+   1. Collection of AWS resources running an application version (only one application version at a time).
+   2. Tiers: **Web Server Environment Tier** and **Worker Environment Tier**
+   **You can create multiple environments** (dev, test, prod).
+
+Elastic Beanstalk supports many platforms and languages,
+but if your is not supported, you can create your custom support.
+<br>
+**Web Server Tier Environment vs. Worker Tier Environment**:
+Worker Tier Environment does not have any client directly accessing EC2 Instances,
+instead it can be SQS queue or SNS topic.
+
+Worker Environment can be combined with Web Environment.
+
+![modes.png](modes.png)
+
+### Deployment Options for Updates
+
+1. **All at once** (deploy all in one go): fastest,
+   but instances are not available to serve traffic for a bit (downtime),
+   no additional costs.
+2. **Rolling**: update a few instances at a time, runs below capacity
+   (bucket, a partial set of instances, **size can be set**), 
+   and then move onto the next bucket one the first bucket is healthy,
+   **long deployment**, no additional costs.
+3. **Rolling with batches**: like rolling, but always **runs at capacity**,
+   so old application is still available, additional cost,
+   additional batch is removed at the end of the deployment,
+   **good for the production environment**.
+4. **Immutable**: spins up new instances in a new ASG,
+   deploys a version to these instances, and then swaps all the instances when ready.
+5. **Blue-Green**: create a new environment and switch over when ready.
+6. **Traffic splitting**: send a small percentage of traffic to new deployment.
+
 ## AWS DynamoDB
 
 Item key consists of:
