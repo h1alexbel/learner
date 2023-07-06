@@ -2249,6 +2249,103 @@ The best way is to separate database and beanstalk environment.
 **It is highly recommended to delete the associated CloudFormation
 stack after deleting an environment**.
 
+## AWS CloudFormation
+
+CloudFormation — managing your infrastructure in code, **IaC (Infrastructure as Code)**.
+CloudFormation cuts out manual setup of AWS services.
+All this manual work will be very tough to reproduce in:
+1. Another AWS Account
+2. Another AWS Region
+
+**CloudFormation is a declarative way of outlining your AWS Infrastructure** for any resources.
+All the code can be version controlled using git.
+Template deletion also can be automated.
+**Template - YAML/JSON file, describes AWS resources and their properties**.
+**Stack - created resources that was described in CloudFormation Template**.
+
+**Templates have to be uploaded in S3** and then referenced in CloudFormation.
+**Templates are immutable**, so you can't update previous ones,
+you must create a new one instead.
+**Name identifies Stack**.
+**After Stack deletion, all resources will be deleted**.
+
+Deploying CloudFormation Templates:
+1. Manual way: CloudFormation Designer + AWS Console
+2. Automated way: YAML/JSON files + CLI to deploy
+
+### Components
+
+1. **Resources**: your AWS resources declared in the template **(REQUIRED)**.
+2. **Parameters**: the dynamic inputs for your template.
+3. **Mappings**: the static variables for your template.
+4. **Outputs**: references to what has been created.
+5. **Conditionals**: conditions to perform resource creation.
+6. **Metadata**
+
+Also, there are Template helpers:
+1. References
+2. Functions
+
+#### Resources
+
+Resources are the **core, required component** of your CloudFormation Template.
+Resources represent AWS resources.
+Resource types identifiers are of the form: `AWS::aws-product-name::data-type-name`
+Resources are declared and can reference each other.
+
+Each resource must have `Type` and `Properties`, a key-value pairs.
+
+#### Parameters
+
+Parameters are a way to provide inputs to your AWS CloudFormation Template.
+**Parameters can help in Template reuse**.
+Also, sometimes parameters are inevitable
+since some inputs cannot be determined ahead of time.
+
+You will not have to re-upload a template to change the value of parameter.
+
+Parameters can be controlled by all these settings:
+1. Type
+2. Description
+3. Constraints
+4. ConstraintDescription
+5. Min/MaxLength
+6. Min/MaxValue
+7. Defaults
+8. AllowedValues
+9. AllowedPattern
+10. NoEcho
+
+To reference a parameter: `!Ref MyVPC`.
+The `Fn::Ref` function can be leveraged to reference parameters,
+the shorthand for `Fn::Ref` is `!Ref`.
+Also, Ref function can be used to reference resources.
+
+**AWS Pseudo Parameters**:
+1. `AWS::AccountId`
+2. `AWS::NotificationARNs`
+3. `AWS::NoValue`
+4. `AWS::Region`
+5. `AWS::StackId`
+6. `AWS::StackName`
+
+#### Mappings
+
+Mappings are **fixed variables** in CloudFormation Template.
+All the values are hardcoded for particular Template.
+
+Some examples of using Mappings:
+1. Region
+2. AZ
+3. AWS Account
+4. Environment (dev vs. production)
+
+`Fn::FindInMap` is used for accessing mapping values.
+<br>
+`!FindInMap [MapName, TopLevelJKey, SecondLevelKey]`
+
+![mappings.png](mappings.png)
+
 ## AWS DynamoDB
 
 Item key consists of:
