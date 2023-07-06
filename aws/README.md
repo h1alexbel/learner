@@ -141,6 +141,36 @@ Authy (multi-device)
 Universal 2nd Factor (U2F) Security Key:
 YubiKey by Yubico (3rd party) and other keychains.
 
+#### MFA with CLI
+
+To use MFA with CLI, you must create a temporary session token (run `STS GetSessionToken` API call).
+
+Each service has permissions.
+You can assign them to AWS services using policies.
+For example, Inline Policy —
+1:1 mapping permissions only for 1 user / service and nobody else.
+
+### IAM Roles for Services
+Some AWS service will need to perform actions on your behalf.
+To do so, we need to assign **permissions** to AWS services (trusted entity) with IAM roles.
+Most common use-cases are EC2 and Lambda.
+
+Permissions, which are not explicitly allowed -> they are **implicitly denied**.
+Everything can be setup in the IAM dashboard.
+
+EC2 Instance Metadata (`IMDS`):
+EC2 Instance Metadata allows EC2 instances to learn about
+'themselves' without using an IAM Role for that purpose.
+You can retrieve the IMA Role name from the metadata,
+**but you cannot retrieve the IAM Policy**.
+
+`IMDSv1` vs. `IMDSv2`:
+IMDSv1 is accessing directly on endpoint: `http://169.254.169.254/latest/meta-data/`
+
+IMDSv2 is more secure and is done in two steps:
+1. Get Session Token (limited validity) using headers and PUT
+2. Use Session Token in IMDSv2 via using headers `-H "X-aws-ec2-metadata-token: $TOKEN"`
+
 ### Accessing the AWS
 To access AWS, you have 3 options:
 1. Management Console (protected by password + MFA)
@@ -189,36 +219,6 @@ SDK:
 3. `~/.aws/credentials`
 4. ECS container credentials
 5. Instance profile credentials for EC2 Instance Profiles
-
-#### MFA with CLI
-
-To use MFA with CLI, you must create a temporary session token (run `STS GetSessionToken` API call).
-
-Each service has permissions.
-You can assign them to AWS services using policies.
-For example, Inline Policy —
-1:1 mapping permissions only for 1 user / service and nobody else.
-
-### IAM Roles for Services
-Some AWS service will need to perform actions on your behalf.
-To do so, we need to assign **permissions** to AWS services (trusted entity) with IAM roles.
-Most common use-cases are EC2 and Lambda.
-
-Permissions, which are not explicitly allowed -> they are **implicitly denied**.
-Everything can be setup in the IAM dashboard.
-
-EC2 Instance Metadata (`IMDS`):
-EC2 Instance Metadata allows EC2 instances to learn about
-'themselves' without using an IAM Role for that purpose.
-You can retrieve the IMA Role name from the metadata,
-**but you cannot retrieve the IAM Policy**.
-
-`IMDSv1` vs. `IMDSv2`:
-IMDSv1 is accessing directly on endpoint: `http://169.254.169.254/latest/meta-data/`
-
-IMDSv2 is more secure and is done in two steps:
-1. Get Session Token (limited validity) using headers and PUT
-2. Use Session Token in IMDSv2 via using headers `-H "X-aws-ec2-metadata-token: $TOKEN"`
 
 ### IAM Security Tools
 <br>
