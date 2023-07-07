@@ -896,6 +896,7 @@ Replication is `ASYNC`, **so reads are eventually consistent**.
 <br>
 Network cost.
 <br>
+
 In AWS there is a **network cost** when data goes from one AZ to another.
 
 **For RDS Read Replicas within the same region, you don't pay that fee.**
