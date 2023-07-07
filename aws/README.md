@@ -2287,7 +2287,7 @@ Also, there are Template helpers:
 1. References
 2. Functions
 
-#### Resources
+### Resources
 
 Resources are the **core, required component** of your CloudFormation Template.
 Resources represent AWS resources.
@@ -2296,7 +2296,7 @@ Resources are declared and can reference each other.
 
 Each resource must have `Type` and `Properties`, a key-value pairs.
 
-#### Parameters
+### Parameters
 
 Parameters are a way to provide inputs to your AWS CloudFormation Template.
 **Parameters can help in Template reuse**.
@@ -2330,7 +2330,7 @@ Also, Ref function can be used to reference resources.
 5. `AWS::StackId`
 6. `AWS::StackName`
 
-#### Mappings
+### Mappings
 
 Mappings are **fixed variables** in CloudFormation Template.
 All the values are hardcoded for particular Template.
@@ -2347,7 +2347,7 @@ Some examples of using Mappings:
 
 ![mappings.png](mappings.png)
 
-#### Outputs
+### Outputs
 
 **The outputs declare optional output values that we can import into other templates**.
 Outputs also can be viewed in AWS Console or using AWS CLI.
@@ -2369,7 +2369,7 @@ Then you can import a value using `Fn::ImportValue` function,
 or `!ImportValue` for short.
 ![import.png](import.png)
 
-#### Conditions
+### Conditions
 
 **Used to control the creation of resources or outputs
 based on a logical condition**.
@@ -2384,7 +2384,7 @@ Each condition can reference another condition, parameter value or mapping.
 
 ![eval.png](eval.png)
 
-#### Intrinsic Functions
+### Intrinsic Functions
 
 1. `Ref`: reference a resource will return a physical ID of it,
    reference a parameter will return its value.
@@ -2395,7 +2395,7 @@ Each condition can reference another condition, parameter value or mapping.
 6. `Sub`: substitute variables from a text
 7. Condition Functions: (`If`, `Not`, `Equals`, etc.)
 
-#### Rollbacks
+### Rollbacks
 
 Stack creation fails:
 1. Default: everything rolls back -> get deleted, atomicity.
