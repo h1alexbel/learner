@@ -896,6 +896,7 @@ Replication is `ASYNC`, **so reads are eventually consistent**.
 <br>
 Network cost.
 <br>
+
 In AWS there is a **network cost** when data goes from one AZ to another.
 
 **For RDS Read Replicas within the same region, you don't pay that fee.**
@@ -2345,6 +2346,107 @@ Some examples of using Mappings:
 `!FindInMap [MapName, TopLevelJKey, SecondLevelKey]`
 
 ![mappings.png](mappings.png)
+
+#### Outputs
+
+**The outputs declare optional output values that we can import into other templates**.
+Outputs also can be viewed in AWS Console or using AWS CLI.
+
+They are very useful, for example, if you define a network CloudFormation,
+and output the variables such as VPC ID and your Subnet's IDs.
+
+**It's the best way to perform cross-stack collaboration**.
+
+**You can't delete a CloudFormation Stack if
+its outputs are being referenced by another CloudFormation Stack**.
+
+![export.png](export.png)
+
+**Exported output names must be unique within your region**.
+<br>
+
+Then you can import a value using `Fn::ImportValue` function,
+or `!ImportValue` for short.
+![import.png](import.png)
+
+#### Conditions
+
+**Used to control the creation of resources or outputs
+based on a logical condition**.
+<br>
+Some common conditions:
+1. Environment (dev/test/prod)
+2. AWS Region
+
+Each condition can reference another condition, parameter value or mapping.
+
+![condition.png](condition.png)
+
+![eval.png](eval.png)
+
+#### Intrinsic Functions
+
+1. `Ref`: reference a resource will return a physical ID of it,
+   reference a parameter will return its value.
+2. `GetAtt`: get attribute from a resource, e.g., `!GetAtt EC2Instance.AvailabilityZone`.
+3. `FindInMap`: return a named value from a specific key, e.g., `!FindInMap [ MapName, TopKey, LowKey ]`.
+4. `ImportValue`: import values from other templates.
+5. `Join`: join values with a delimiter, e.g., `!Join [ delimiter, [ values... ] ]`.
+6. `Sub`: substitute variables from a text
+7. Condition Functions: (`If`, `Not`, `Equals`, etc.)
+
+#### Rollbacks
+
+Stack creation fails:
+1. Default: everything rolls back -> get deleted, atomicity.
+2. Preserve successfully provisioned resources, while
+   rolling back failed resources to the last stable state.
+
+Stack update fails:
+the stack automatically rolls back to the previous known working state,
+ability to see in the log what happened and error messages.
+
+#### Stack Notifications
+
+Send Stack events to SNS Topic, Email, Lambda.
+**SNS Integration can be enabled using Stack Options**.
+
+#### ChangeSets
+
+When you update a stack, you need to know what changes before it happens for greater confidence.
+ChangeSets won't say if the update will be successful or not, **just what will happen**.
+
+#### Nested Stacks, StackSet
+
+**Nested stacks are stack as part of other stacks**.
+**They isolate common patterns and components in separate stacks and
+call them from other stacks for reuse purposes**.
+<br>
+To update a nested stack, you need to update the parent first.
+<br>
+StackSets are for create, update, or delete stacks across
+multiple accounts and regions with a single operation.
+**When you update a stack set, all associated stack instances
+are updated throughout all accounts and regions**.
+
+#### Drift
+
+CloudFormation doesn't protect you against manual configuration changes.
+**CloudFormation Drift can be used for knowing resources been drifted**.
+
+CloudFormation shows the difference between actual and expected state.
+
+Not all resources are supported.
+
+#### Stack Policies
+
+During a CloudFormation Stack update,
+all update actions are allowed on all resources (default).
+
+**A Stack Policy is a JSON document that defines
+the update actions that are allowed no specific resources during Stack updates**.
+
+With a Stack Policy, by default, all resources in the stack are protected.
 
 ## AWS DynamoDB
 
