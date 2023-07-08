@@ -381,6 +381,7 @@ In the Management Console, you can start a new browser session with connection t
 Pay for what you use:
 1. Linux or Windows — billing per second, after the first minute
 2. All other OSs — billing per hour
+<br>
 Has the **highest cost but no upfront payment**, no long-term commitment.
 
 **Reserved** (1 and 3 years):
