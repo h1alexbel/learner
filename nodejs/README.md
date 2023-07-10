@@ -1,5 +1,18 @@
 # Node JS
 
+Node.js - a JavaScript Runtime, makes JavaScript accessible on the server.
+Node.js uses **V8 engine**, that runs JavaScript in the browser.
+**V8 engine**, written C++, compiles JavaScript code to Machine code.
+Node.js adds extensions to the V8 engine.
+
+https://nodejs.org/en
+
+Node.js offers an interactive, [REPL](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop) mode:
+```text
+node
+> <node commands>
+```
+
 ## Tooling
 
 1. `npm` vs. `yarn`, NPM registry: `https://www.npmjs.com`
