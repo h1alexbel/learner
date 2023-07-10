@@ -6,7 +6,8 @@
 2. Static analysis: `ESLint`, Code formatter: `Prettier`,
    TSLint was deprecated.
 3. Testing: `jest`, `testcontainers`
-4. ..
+4. Automation: `Grunt`
+5. ..
 
 ## NVM
 
