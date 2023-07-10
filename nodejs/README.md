@@ -53,10 +53,17 @@ will update you to all future minor/patch versions, without incrementing the MAJ
 
 ### Modules
 
+### Folder structure
+
+```text
+src/*
+test/*
+package.json
+
+```
+
 ## JavaScript
 
 ## Express.js
 
 ## TypeScript
-
-## Folder structure
