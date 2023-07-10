@@ -25,9 +25,9 @@ It has its own CLI: `npm`.
 Version number stored in the `package.json` file:
 ```json
 {
-"name": "package-name",
-"version": "MAJOR.MINOR.PATCH", 
- ...
+   "name": "package-name",
+   "version": "MAJOR.MINOR.PATCH",
+   ...
 }
 ```
 
