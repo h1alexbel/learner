@@ -59,7 +59,7 @@ will update you to all future minor/patch versions, without incrementing the MAJ
 src/*
 test/*
 package.json
-
+package-lock.json
 ```
 
 ## JavaScript
