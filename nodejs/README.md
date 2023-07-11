@@ -75,6 +75,12 @@ package.json
 package-lock.json
 ```
 
+`package-lock.json`is automatically generated for any operations where npm modifies
+either the `node_modules tree`, or `package.json`.
+This file is intended to be committed into source repositories to describe
+a single representation of a dependency tree such that teammates, deployments,
+and continuous integration are guaranteed to install exactly the same dependencies.
+
 ## JavaScript
 
 ## Express.js
