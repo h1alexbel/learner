@@ -162,6 +162,48 @@ const num = 1;
 const another; // SyntaxError: Missing initializer in const declaration
 ```
 
+#### Variable Hoisting
+
+Hoisting in JavaScript is a behavior in which a function or a variable can be used before declaration:
+```javascript
+console.log(test);
+var test;
+```
+
+In terms of variables and constants, keyword `var` is hoisted and
+**`let` and `const` do not allow hoisting**.
+**While using let, the variable must be declared first**.
+
+#### Function Hoisting
+
+A function can be called before declaring it:
+```javascript
+greet();
+
+function greet() {
+    console.log('Hi, there.');
+}
+
+// the output will be: Hi, there.
+```
+**However, when a function is used as an expression,
+an error occurs because only declarations are hoisted**:
+
+```javascript
+greet();
+
+let greet = function() {
+    console.log('Hi, there.');
+}
+
+// the output will be Uncaught ReferenceError: greet is not defined
+```
+
+In case of `var` usage it will give the following output:
+```text
+Uncaught TypeError: greet is not a function
+```
+
 ## Express.js
 
 ## TypeScript
