@@ -1,9 +1,15 @@
 # Node JS
 
-Node.js - a JavaScript Runtime, makes JavaScript accessible on the server.
+Node.js - **a JavaScript Runtime**, makes JavaScript accessible on the server.
 Node.js uses **V8 engine**, that runs JavaScript in the browser.
 **V8 engine**, written C++, compiles JavaScript code to Machine code.
 Node.js adds extensions to the V8 engine.
+
+Backend applications on Node.js don't require
+extra tools for serving, like Apache, Tomcat, etc.
+
+**Instead, they are running the server by listening to the socket
+and executing the application code**.
 
 https://nodejs.org/en
 
@@ -82,6 +88,79 @@ a single representation of a dependency tree such that teammates, deployments,
 and continuous integration are guaranteed to install exactly the same dependencies.
 
 ## JavaScript
+
+Weakly-Typed, just-in-time compiled, Object-Oriented Language.
+Language of the modern web.
+Runs in browser and on a server.
+
+### Data types
+
+#### Numbers
+
+Integers, Float-point numbers
+
+#### Strings
+
+A collection of one or more characters between two single quotes, double quotes, or backticks:
+```javascript
+'a'
+"a"
+`a`
+```
+
+#### Booleans
+
+A boolean value is either `True` of `False`.
+```javascript
+true
+false
+```
+
+#### Undefined
+
+If value is not assigned to a variable, the value of the variable is `undefined`.
+**Also, if function is not returning anything, the result will be `undefined`**.
+```javascript
+let fistname;
+console.log(fistname) // undefined
+```
+
+#### NULL
+
+NULL in JavaScript means just an empty value.
+```javascript
+let user = null;
+```
+
+#### Type Checking
+
+To check the data type of certain variable, we use the `typeof` operator:
+```javascript
+console.log(typeof 'a') // string
+console.log(typeof 5) // number
+console.log(typeof true) // boolean
+console.log(typeof null) // object
+console.log(typeof undefined) // undefined
+```
+
+### Declarations
+
+`var` declares a variable, optionally initializing a value:
+```javascript
+var num;
+```
+
+`let` declares a block-scoped, local variable, optionally initializing a value:
+```javascript
+let num;
+```
+
+`const` declares a block-scoped, read-only named constant,
+similar to `final` in Java:
+```javascript
+const num = 1;
+const another; // SyntaxError: Missing initializer in const declaration
+```
 
 ## Express.js
 
