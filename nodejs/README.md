@@ -1,5 +1,18 @@
 # Node JS
 
+Node.js - a JavaScript Runtime, makes JavaScript accessible on the server.
+Node.js uses **V8 engine**, that runs JavaScript in the browser.
+**V8 engine**, written C++, compiles JavaScript code to Machine code.
+Node.js adds extensions to the V8 engine.
+
+https://nodejs.org/en
+
+Node.js offers an interactive, [REPL](https://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop) mode:
+```text
+node
+> <node commands>
+```
+
 ## Tooling
 
 1. `npm` vs. `yarn`, NPM registry: `https://www.npmjs.com`
@@ -61,6 +74,12 @@ test/*
 package.json
 package-lock.json
 ```
+
+`package-lock.json`is automatically generated for any operations where npm modifies
+either the `node_modules tree`, or `package.json`.
+This file is intended to be committed into source repositories to describe
+a single representation of a dependency tree such that teammates, deployments,
+and continuous integration are guaranteed to install exactly the same dependencies.
 
 ## JavaScript
 
