@@ -2,7 +2,7 @@
 
 Node.js - **a JavaScript Runtime**, makes JavaScript accessible on the server.
 Node.js uses **V8 engine**, that runs JavaScript in the browser.
-**V8 engine**, written C++, compiles JavaScript code to Machine code.
+**[V8 engine](#v8)**, written C++, compiles JavaScript code to Machine code.
 Node.js adds extensions to the V8 engine.
 
 Backend applications on Node.js don't require
@@ -27,6 +27,24 @@ node
 3. Testing: `jest`, `testcontainers`
 4. Automation: `Grunt`
 5. ..
+
+## V8
+
+Node.js uses V8 engine.
+
+V8 provides **Memory Heap** and **Call Stack**.
+
+**Heap requires only an array**:
+```text
+left = 2 * i + 1
+right = 2 * i + 2
+```
+V8 engine **since version 5.9** uses Ignition(without optimization) and TurboFan (optimizations).
+
+Some other engines:
+1. Rhino - Mozilla, Firefox.
+2. Chakra - Microsoft Edge.
+3. JerryScript for IoT.
 
 ## NVM
 
@@ -92,6 +110,24 @@ and continuous integration are guaranteed to install exactly the same dependenci
 Weakly-Typed, just-in-time compiled, Object-Oriented Language.
 Language of the modern web.
 Runs in browser and on a server.
+
+In JavaScript, it's possible to add fields and functions in runtime:
+```javascript
+function Point(x, y) {
+   this.x = x;
+   this.y = y;
+}
+
+const p = new Point(1, 2);
+let b = p.b; // will be added in runtime
+```
+
+For idempotent functions, JavaScript caches the result.
+
+Summary:
+1. Initialize object properties in the same order
+2. Don't use Dynamic properties
+3. Don't use Sparse Arrays
 
 ### Data types
 
