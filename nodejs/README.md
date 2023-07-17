@@ -46,6 +46,67 @@ Some other engines:
 2. Chakra - Microsoft Edge.
 3. JerryScript for IoT.
 
+### Module Systems
+
+1. CommonJs (Servers)
+2. ESM (Servers, Browsers)
+
+ESM uses `export` and `import`.
+**Exports and Imports can be renamed**.
+
+Wildcard import:
+```javascript
+import * as helperModule from './helper.js'
+```
+
+CommonJs:
+
+```javascript
+module.exports.some = 42
+```
+In the last versions its possible to use just `exports`:
+```javascript
+exports.some = 42
+```
+
+Default Export:
+```javascript
+module.exports = function () {}
+```
+**This expression doesn't work with just `exports`**.
+
+Can be used in combination with `require()`:
+```javascript
+const func = require('./some.js'); 
+```
+
+Module scanning:
+```text
+/home
+ /work
+  /secret
+   src
+   test 
+   package.json
+```
+Modules will be scanned in this order:
+1. `/secret/node_modules`
+2. `/work/node_modules`
+3. `/home/node_modules`
+4. `node_modules`
+
+If no matches are found, modules will be scanned here:
+1. `$HOME/.node_modules`
+2. `$HOME/.node_libraries`
+3. `$HOME/lib/node`
+
+```javascript
+require.resolve().paths('moduleName');
+```
+
+Require a caching problem was fixed.
+https://stackoverflow.com/questions/9210542/node-js-require-cache-possible-to-invalidate
+
 ## NVM
 
 Node Version Manager (NVM) is a tool used to install,
@@ -110,6 +171,7 @@ and continuous integration are guaranteed to install exactly the same dependenci
 Weakly-Typed, just-in-time compiled, Object-Oriented Language.
 Language of the modern web.
 Runs in browser and on a server.
+JavaScript runs the code, even in case of compilation errors.
 
 In JavaScript, it's possible to add fields and functions in runtime:
 ```javascript
@@ -133,7 +195,28 @@ Summary:
 
 #### Numbers
 
-Integers, Float-point numbers
+Integers, Float-point numbers, etc:
+```javascript
+10
+0x3F
+0b101010
+03573
+3.14
+.1234
+Number.MAX_VALUE
+Infinity
+~Infinity
+NaN
+```
+
+```javascript
+Number('not number')
+```
+Will be transformed into `NaN`.
+
+#### BigInt
+
+#### Symbols
 
 #### Strings
 
@@ -180,6 +263,11 @@ console.log(typeof undefined) // undefined
 ```
 
 ### Declarations
+
+After JavaScript ES6 a.k.a ECMAScript 2015 or ECMAScript 6,
+there are two types of variables been introduced:
+`let`, `const`.
+Before EcmaScript 6, var also
 
 `var` declares a variable, optionally initializing a value:
 ```javascript
