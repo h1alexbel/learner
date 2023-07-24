@@ -118,6 +118,113 @@ on the system and change the active version depending on their current needs.
 
 Node Package Manager (NPM) is a software registry for JavaScript packages.
 It has its own CLI: `npm`.
+```shell
+npm install
+```
+
+**Will analyze a dependency tree and
+apply packages into `node_modules`**.
+
+```shell
+npm install --save
+```
+
+NPM will save it into `package.json`.
+**Right now is the default flag**.
+
+NPM has scripts.
+Scripts can be run using:
+```shell
+npm task
+npm run task
+```
+
+All scripts are stored in `"scripts"` node in the `package.json` file:
+```json
+...
+"scripts": {
+    "ci": "npm install && npm run lint && npm run test && npm run test:cov && npm run build",
+    "build": "nest build",
+    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand"
+  },
+...
+```
+
+Scripts can be installed too, using `npx`:
+```shell
+npx someAction
+```
+
+```json
+{
+  "name": "$name",
+  "version": "x.y.z",
+  "description": "",
+  "author": "",
+  "private": false,
+  "license": "MIT",
+  "contributors": [],
+  "main": "", // entry point
+  "files": [], // files and dirs (can be replaced with .npmignore)
+  "scripts": {
+    // scripts
+  },
+  "dependencies": {
+    // deps
+  },
+  "devDependencies": {
+    // devs
+  },
+  "engines": {
+    // node version
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "src",
+    "testRegex": ".*\\.spec\\.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "collectCoverageFrom": [
+      "**/*.(t|j)s"
+    ],
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node"
+  }
+}
+```
+
+Also, you can specify `.npmignore`:
+```text
+.rultor.yml
+.github/
+articles.json
+test/
+renovate.json
+```
+**those files and dirs will be ignored on releasing to `npm`**. 
+
+### Other package managers
+
+#### Yarn
+
+2016, by Facebook.
+Workspaces, Plugins.
+Faster than NPM.
+
+#### PNPM
+
+2016, Hard links between packages.
+Faster than YARN.
 
 ### Versioning
 
