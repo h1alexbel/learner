@@ -2485,13 +2485,13 @@ SQS can be integrated with CloudWatch Metrics and Alarms for autoscaling purpose
 
 ![sqs-asg.png](sqs-asg.png)
 
-#### Producing Messages
+### Producing Messages
 
 Producer sends a message to the Queue using the SDK SendMessage API.
 The message is persisted in SQS **until a consumer deletes it**.
 Or retention is off.
 
-#### Consuming Messages
+### Consuming Messages
 
 Consumers can be running on EC2 Instances, other servers, or AWS Lambda).
 Consumer polls queue for messages using SDK ReceiveMessages API, and **can receive up to 10 messages at a time**.
@@ -2500,7 +2500,7 @@ Consumer polls queue for messages using SDK ReceiveMessages API, and **can recei
 <br>
 **Purge a queue — delete all messages from the queue**.
 
-#### Security
+### Security
 
 `Encryption`:
 * In-flight encryption using HTTPS API;
@@ -2511,6 +2511,8 @@ Consumer polls queue for messages using SDK ReceiveMessages API, and **can recei
 `SQS Access Policies` (similar to S3 bucket policies):
 * **Useful for cross-account access to SQS queues**.
 * **Useful for allowing other services to send messages to an SQS queue**.
+
+### Queue Access Policy
 
 ## AWS DynamoDB
 
