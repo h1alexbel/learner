@@ -2459,6 +2459,7 @@ they will inevitably need it to communicate with one another using:
    1. SQS queue model
    2. SNS pub/sub model
    3. Kinesis real-time processing/streaming model
+
 **Using asynchronous communication systems can scale independently**.
 
 ## SQS
