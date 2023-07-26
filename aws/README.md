@@ -2449,6 +2449,69 @@ the update actions that are allowed no specific resources during Stack updates**
 
 With a Stack Policy, by default, all resources in the stack are protected.
 
+## AWS Integration and Messaging
+
+When multiple applications appear, 
+they will inevitably need it to communicate with one another using:
+
+1. Synchronous communication (app to app)
+2. Asynchronous communication (app to queue to app):
+   1. SQS queue model
+   2. SNS pub/sub model
+   3. Kinesis real-time processing/streaming model
+
+**Using asynchronous communication systems can scale independently**.
+
+## SQS
+
+Simple Queuing Service (SQS):
+producers send a message to the queue, consumers poll it and process.
+
+### Standard Queue
+
+Fully managed service, used to decouple applications.
+Unlimited throughput, unlimited number of messages in queue.
+**Default retention of messages: 4 days, max: 14 days**.
+<br>
+**Low latency**: (less than 10ms on publish and receive).
+**Limitation of 256KB per message sent**.
+<br>
+**Can have duplicate messages (at least once delivery)**.
+<br>
+**Can have out of order messages**.
+
+<br>
+SQS can be integrated with CloudWatch Metrics and Alarms for autoscaling purposes:
+
+![sqs-asg.png](sqs-asg.png)
+
+#### Producing Messages
+
+Producer sends a message to the Queue using the SDK SendMessage API.
+The message is persisted in SQS **until a consumer deletes it**.
+Or retention is off.
+
+#### Consuming Messages
+
+Consumers can be running on EC2 Instances, other servers, or AWS Lambda).
+Consumer polls queue for messages using SDK ReceiveMessages API, and **can receive up to 10 messages at a time**.
+**Competing consumers can increase throughput**.
+**By deleting message from SQS queue we are signaling that message was successfully processed**.
+<br>
+**Purge a queue — delete all messages from the queue**.
+
+#### Security
+
+`Encryption`:
+* In-flight encryption using HTTPS API;
+* At-rest encryption using KMS keys;
+* Client-side encryption if the client wants to perform encryption/decryption itself.
+`Access Controls`:
+* IAM Policies to regulate access to the SQS API.
+`SQS Access Policies` (similar to S3 bucket policies):
+* **Useful for cross-account access to SQS queues**.
+* **Useful for allowing other services to send messages to an SQS queue**.
+
 ## AWS DynamoDB
 
 Item key consists of:
