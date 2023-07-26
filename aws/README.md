@@ -2514,6 +2514,53 @@ Consumer polls queue for messages using SDK ReceiveMessages API, and **can recei
 
 ### Queue Access Policy
 
+JSON Resource IAM Policies.
+
+Use-cases:
+1. Cross-Account Access
+   ![cross-account.png](cross-account.png)
+2. Access from other services
+   ![access-from-services.png](access-from-services.png)
+
+### Message Visibility Timeout
+
+After a message is polled by a consumer, **it becomes invisible to other consumers**.
+By default, the 'message visibility timeout' is `30` seconds.
+**If a message is not deleted from the queue, and message visibility timeout is elapsed,
+the message will be visible for other consumers**.
+
+![visibility.png](visibility.png)
+
+**Simply put, if a message is not processed within the visibility timeout,
+it will be processed twice**.
+A consumer could call the `ChangeMessageVisibility` API to get more time.
+
+* If visibility timeout is high (hours), and consumer crashes,
+re-processing will take a lot of time.
+
+* If visibility timeout is too low (seconds), we may get duplicate processing.
+
+### Dead Letter Queue (DLQ)
+
+If a message is processed too many times and not successfully, 
+it goes to the DLQ.
+
+Useful for _debugging_.
+
+**DLQ of a FIFO queue must be also a FIFO queue**.
+<br>
+**DLQ of a Standard queue must be also a Standard queue**.
+
+When working with DLQs, it's a good idea to set long retention in DLQ.
+
+### Redrive to Source
+
+Feature to help consume messages in the DLQ to understand 
+what is wrong with them.
+
+When everything is fixed, you can redrive
+messages from DLQ into the source queue.
+
 ## AWS DynamoDB
 
 Item key consists of:
