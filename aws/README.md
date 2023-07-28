@@ -2470,7 +2470,10 @@ producers send a message to the queue, consumers poll it and process.
 ### Standard Queue
 
 Fully managed service, used to decouple applications.
-Unlimited throughput, unlimited number of messages in queue.
+* Unlimited throughput, unlimited number of messages in queue
+* At-least-once delivery
+* Best-effort ordering
+
 **Default retention of messages: 4 days, max: 14 days**.
 <br>
 **Low latency**: (less than 10ms on publish and receive).
@@ -2560,6 +2563,84 @@ what is wrong with them.
 
 When everything is fixed, you can redrive
 messages from DLQ into the source queue.
+
+### Delay Queues
+
+Delay a message, so consumers don't see it immediately (up to 15 minutes).
+Default is 0 seconds.
+Can set a default at queue level.
+Message delay can be overridden by sending data with `DelaySeconds` parameter.
+
+### Long Polling
+
+Long Polling: When a consumer requests messages from the queue,
+it can optionally wait for messages to arrive if there are none in the queue.
+**Long Polling decreases the number of API calls made to SQS,
+while increasing the latency of your application**.
+
+Using `ReceiveMessageWaitTimeSeconds`, on each polling you can tell your consumer: 
+how long to wait before getting a response.
+
+The wait time can be **between 1 and 20 seconds**.
+Consumers will wait up to x seconds if the queue is empty.
+**The default one is 0 seconds (Short Polling)**.
+
+### Extended Client
+
+Extended client helps to deliver large messages:
+![large-in-sqs.png](large-in-sqs.png)
+
+Use-cases:
+* Video files
+* Large documents
+
+### SQS API
+
+* `CreateQueue(MessageRetentionPeriod)`
+* `DeleteQueue`
+* `PurgeQueue`: delete all the messages in queue
+* `SendMessage(DelaySeconds)`
+* `ReceiveMessage`
+* `DeleteMessage`
+* `MaxNumberOfMessages`: default is 1, max 10 (for `ReceiveMessage` API)
+* `ReceiveMessageWaitTimeSeconds`: how long to wait before getting a response (Long Polling)
+* `ChangeMessageVisibility`: change the message timeout
+
+Also, batch APIs for `SendMessage`, `DeleteMessage`, `ChangeMessageVisibility`
+helps decrease costs.
+
+### FIFO Queues
+
+First In First Out (ordering of messages in the queue).
+**FIFO is a queue with limited throughput: `300msg/s` without batching, 
+and `3000 msg/s` with**.
+* Exactly-once send capability (by removing duplicates)
+* Messages are processed in order by the consumer
+
+Queue's name must ends with `.fifo`
+
+### FIFO Deduplication
+
+Deduplication interval is 5 minutes.
+**If the same message is delivered in this interval,
+it will be refused**.
+
+Deduplication methods:
+1. Content-based deduplication: check SHA-256 hash of message body
+2. Explicitly provided Message Deduplication ID
+
+### Message Grouping
+
+If you specify the **same value of `MessageGroupID`** is an SQS FIFO queue,
+**you can only have one consumer, and all the messages are in order**.
+<br>
+To get **ordering at the level of a subset of messages**,
+specify **different values for `MessageGroupID`**.
+* So, messages will be ordered within a group,
+while global ordering is not guaranteed.
+* Each Group ID can have a different consumer (parallel processing)
+
+## AWS SNS
 
 ## AWS DynamoDB
 
