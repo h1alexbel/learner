@@ -2470,7 +2470,10 @@ producers send a message to the queue, consumers poll it and process.
 ### Standard Queue
 
 Fully managed service, used to decouple applications.
-Unlimited throughput, unlimited number of messages in queue.
+* Unlimited throughput, unlimited number of messages in queue
+* At-least-once delivery
+* Best-effort ordering
+
 **Default retention of messages: 4 days, max: 14 days**.
 <br>
 **Low latency**: (less than 10ms on publish and receive).
@@ -2560,6 +2563,187 @@ what is wrong with them.
 
 When everything is fixed, you can redrive
 messages from DLQ into the source queue.
+
+### Delay Queues
+
+Delay a message, so consumers don't see it immediately (up to 15 minutes).
+Default is 0 seconds.
+Can set a default at queue level.
+Message delay can be overridden by sending data with `DelaySeconds` parameter.
+
+### Long Polling
+
+Long Polling: When a consumer requests messages from the queue,
+it can optionally wait for messages to arrive if there are none in the queue.
+**Long Polling decreases the number of API calls made to SQS,
+while increasing the latency of your application**.
+
+Using `ReceiveMessageWaitTimeSeconds`, on each polling you can tell your consumer: 
+how long to wait before getting a response.
+
+The wait time can be **between 1 and 20 seconds**.
+Consumers will wait up to x seconds if the queue is empty.
+**The default one is 0 seconds (Short Polling)**.
+
+### Extended Client
+
+Extended client helps to deliver large messages:
+![large-in-sqs.png](large-in-sqs.png)
+
+Use-cases:
+* Video files
+* Large documents
+
+### SQS API
+
+* `CreateQueue(MessageRetentionPeriod)`
+* `DeleteQueue`
+* `PurgeQueue`: delete all the messages in queue
+* `SendMessage(DelaySeconds)`
+* `ReceiveMessage`
+* `DeleteMessage`
+* `MaxNumberOfMessages`: default is 1, max 10 (for `ReceiveMessage` API)
+* `ReceiveMessageWaitTimeSeconds`: how long to wait before getting a response (Long Polling)
+* `ChangeMessageVisibility`: change the message timeout
+
+Also, batch APIs for `SendMessage`, `DeleteMessage`, `ChangeMessageVisibility`
+helps decrease costs.
+
+### FIFO Queue
+
+First In First Out (ordering of messages in the queue).
+**FIFO is a queue with limited throughput: `300msg/s` without batching, 
+and `3000 msg/s` with**.
+* Exactly-once send capability (by removing duplicates)
+* Messages are processed in order by the consumer
+
+Queue's name must ends with `.fifo`
+
+### FIFO Deduplication
+
+Deduplication interval is 5 minutes.
+**If the same message is delivered in this interval,
+it will be refused**.
+
+Deduplication methods:
+1. Content-based deduplication: check SHA-256 hash of message body
+2. Explicitly provided Message Deduplication ID
+
+### Message Grouping
+
+If you specify the **same value of `MessageGroupID`** is an SQS FIFO queue,
+**you can only have one consumer, and all the messages are in order**.
+<br>
+To get **ordering at the level of a subset of messages**,
+specify **different values for `MessageGroupID`**.
+* So, messages will be ordered within a group,
+while global ordering is not guaranteed.
+* Each Group ID can have a different consumer (parallel processing)
+
+## AWS SNS
+
+Simple Notification Service.
+It is either can be [Standard](#standard-queue) or [FIFO](#fifo-queue).
+One message to many receivers.
+<br>
+**SNS is a Pub-Sub messaging**.
+Each subscriber to the SNS topic will get all the messages.
+Messages can be filtered.
+
+* Up to 12,500,000 subs per topic
+* 100,000 topics limit
+* SNS can send messages directly to `Email`, `SMS`, mobile notifications,
+  `HTTP(S)` endpoints or other AWS services: `SQS`, `Lambda`, `Kinesis Data Firehose`.
+* SNS integrates with a lot of AWS services: `CloudWatch Alarms`, `AWS Budgets`, `Auto Scaling Group`,
+  `S3 Bucket Events`, `CloudFormation State Changes`, `AWS DMS New Replic`, `RDS Events`, and others.
+
+The same as SQS and S3, you will need Access Policies for allowing other services 
+to publish into an SNS topic.
+
+### SNS & SQS Fan Out
+
+Push once in SNS, receive in all SQS queues that are subscribers.
+* Fully decoupled, no data loss
+* SQS allows for: data persistence, delayed processing and retries of work
+* Ability to add more SQS subscribers over time
+
+**Make sure your SQS queue Access Policy allows for SNS to publish in it**.
+
+Use-cases:
+* S3 Events to multiple queues
+
+![fan-out.png](fan-out.png)
+
+### SNS FIFO Topic
+
+![sns-fifo.png](sns-fifo.png)
+
+* Similar to [SQS FIFO](#fifo-queue)
+* **Can only have SQS FIFO queues as subs**
+* Limited throughput as SQS FIFO
+
+Fan Out pattern with FIFO will look like this:
+
+![fifo-fan-out.png](fifo-fan-out.png)
+
+### Message Filtering
+
+JSON Policy used to filter messages sent to SNS topic's subs.
+**If a sub doesn't have a filter policy, it will receive every message**.
+
+## AWS Kinesis
+
+Kinesis combines the collection, processing, and analyzing of streaming data in real-time.
+Ingest real-time data such as:
+* Application Logs
+* Metrics
+* Website click streams
+* IoT telemetry data
+* etc.
+
+Kinesis consists of 4 services:
+1. Kinesis Data Streams: capture, process, and store data streams
+2. Kinesis Data Firehose: load data streams into AWS data stores
+3. Kinesis Data Analytics: analyze data streams with SQL or Apache Flink
+4. Kinesis Video Streams: capture, process, and store video streams
+
+### Data Streams
+
+Data Streams are made of multiple numbered shards.
+Data split across all the shards.
+Number of shards you need to provision ahead of time.
+
+* Retention between 1 day to 365 days.
+* Ability to reprocess/replay data.
+* Data Immutability: once data is inserted in Kinesis, it can't be deleted.
+* Data with the **same partition key goes to the same shard**, thus ordering is guarantied.
+
+Producer can send a record with partition key and data blob up to 1MB.
+1MB/s or 1000 msg/s per shard.
+Producer examples:
+* Clients
+* SDK, KPL
+* Kinesis Agent
+
+Consumer can process the record consists of:
+partition key, sequence number, and data blob.
+Throughput in the shared mode is 2MB/s per shard all consumers,
+in the enhanced mode is 2MB/s per shard per consumer.
+Consumer examples:
+* KCL, SDK
+* Lambda
+* Kinesis Data Firehose
+* Kinesis Data Analytics
+
+#### Capacity Modes
+
+1. Provisioned mode: you choose the number of shards provisioned, then scale manually or using API.
+   Each shard gets 1MB/s in and 2MB/s out.
+   **You pay per shard provisioned per hour**.
+2. On-demand mode: no need to manage the capacity, capacity will be adjusted on-demand.
+   Default capacity provisioned: 4MB/s.
+   Scales automatically based on observed throughput peak during the last 30 days.
+   **You pay per stream per hour and data in/out per GB**.
 
 ## AWS DynamoDB
 
