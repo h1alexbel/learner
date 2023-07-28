@@ -2693,6 +2693,58 @@ JSON Policy used to filter messages sent to SNS topic's subs.
 
 ## AWS Kinesis
 
+Kinesis combines the collection, processing, and analyzing of streaming data in real-time.
+Ingest real-time data such as:
+* Application Logs
+* Metrics
+* Website click streams
+* IoT telemetry data
+* etc.
+
+Kinesis consists of 4 services:
+1. Kinesis Data Streams: capture, process, and store data streams
+2. Kinesis Data Firehose: load data streams into AWS data stores
+3. Kinesis Data Analytics: analyze data streams with SQL or Apache Flink
+4. Kinesis Video Streams: capture, process, and store video streams
+
+### Data Streams
+
+Data Streams are made of multiple numbered shards.
+Data split across all the shards.
+Number of shards you need to provision ahead of time.
+
+* Retention between 1 day to 365 days.
+* Ability to reprocess/replay data.
+* Data Immutability: once data is inserted in Kinesis, it can't be deleted.
+* Data with the **same partition key goes to the same shard**, thus ordering is guarantied.
+
+Producer can send a record with partition key and data blob up to 1MB.
+1MB/s or 1000 msg/s per shard.
+Producer examples:
+* Clients
+* SDK, KPL
+* Kinesis Agent
+
+Consumer can process the record consists of:
+partition key, sequence number, and data blob.
+Throughput in the shared mode is 2MB/s per shard all consumers,
+in the enhanced mode is 2MB/s per shard per consumer.
+Consumer examples:
+* KCL, SDK
+* Lambda
+* Kinesis Data Firehose
+* Kinesis Data Analytics
+
+#### Capacity Modes
+
+1. Provisioned mode: you choose the number of shards provisioned, then scale manually or using API.
+   Each shard gets 1MB/s in and 2MB/s out.
+   **You pay per shard provisioned per hour**.
+2. On-demand mode: no need to manage the capacity, capacity will be adjusted on-demand.
+   Default capacity provisioned: 4MB/s.
+   Scales automatically based on observed throughput peak during the last 30 days.
+   **You pay per stream per hour and data in/out per GB**.
+
 ## AWS DynamoDB
 
 Item key consists of:
