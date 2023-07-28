@@ -2609,7 +2609,7 @@ Use-cases:
 Also, batch APIs for `SendMessage`, `DeleteMessage`, `ChangeMessageVisibility`
 helps decrease costs.
 
-### FIFO Queues
+### FIFO Queue
 
 First In First Out (ordering of messages in the queue).
 **FIFO is a queue with limited throughput: `300msg/s` without batching, 
@@ -2641,6 +2641,57 @@ while global ordering is not guaranteed.
 * Each Group ID can have a different consumer (parallel processing)
 
 ## AWS SNS
+
+Simple Notification Service.
+It is either can be [Standard](#standard-queue) or [FIFO](#fifo-queue).
+One message to many receivers.
+<br>
+**SNS is a Pub-Sub messaging**.
+Each subscriber to the SNS topic will get all the messages.
+Messages can be filtered.
+
+* Up to 12,500,000 subs per topic
+* 100,000 topics limit
+* SNS can send messages directly to `Email`, `SMS`, mobile notifications,
+  `HTTP(S)` endpoints or other AWS services: `SQS`, `Lambda`, `Kinesis Data Firehose`.
+* SNS integrates with a lot of AWS services: `CloudWatch Alarms`, `AWS Budgets`, `Auto Scaling Group`,
+  `S3 Bucket Events`, `CloudFormation State Changes`, `AWS DMS New Replic`, `RDS Events`, and others.
+
+The same as SQS and S3, you will need Access Policies for allowing other services 
+to publish into an SNS topic.
+
+### SNS & SQS Fan Out
+
+Push once in SNS, receive in all SQS queues that are subscribers.
+* Fully decoupled, no data loss
+* SQS allows for: data persistence, delayed processing and retries of work
+* Ability to add more SQS subscribers over time
+
+**Make sure your SQS queue Access Policy allows for SNS to publish in it**.
+
+Use-cases:
+* S3 Events to multiple queues
+
+![fan-out.png](fan-out.png)
+
+### SNS FIFO Topic
+
+![sns-fifo.png](sns-fifo.png)
+
+* Similar to [SQS FIFO](#fifo-queue)
+* **Can only have SQS FIFO queues as subs**
+* Limited throughput as SQS FIFO
+
+Fan Out pattern with FIFO will look like this:
+
+![fifo-fan-out.png](fifo-fan-out.png)
+
+### Message Filtering
+
+JSON Policy used to filter messages sent to SNS topic's subs.
+**If a sub doesn't have a filter policy, it will receive every message**.
+
+## AWS Kinesis
 
 ## AWS DynamoDB
 
