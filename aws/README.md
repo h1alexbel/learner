@@ -2834,11 +2834,12 @@ you need to do manual capacity increasing and decreasing**.
   used to increase throughput, used to divide 'hot' shard,
   cost will also be increased
   can't split than two shards within a single operation.
-  ![split.png](split.png)
 * Merging shards (Scale Down): used to decrease capacity, cost saving,
   can't merge than two shards within a single operation. 
-  ![merge.png](merge.png)
 
+![split.png](split.png)
+
+![merge.png](merge.png)
 ## AWS DynamoDB
 
 Item key consists of:
