@@ -2750,6 +2750,12 @@ Each record is going through hash function for high data distribution:
 
 So, to avoid 'hot partition', **use highly distributed partition key**.
 
+Kinesis ordering works with a partition key:
+**the same key will always go to the same shard**.
+
+In the case of [SQS](#sqs), you can have only one SQS FIFO Queue
+and multiple Group IDs.
+
 #### ProvisionedThroughputExceeded
 
 ![exceeded.png](exceeded.png)
@@ -2840,6 +2846,38 @@ you need to do manual capacity increasing and decreasing**.
 ![split.png](split.png)
 
 ![merge.png](merge.png)
+
+### Data Firehose
+
+Data Firehose, a fully managed, serverless service that
+can take data from producers or [Data Streams](#data-streams)
+and apply transformations using AWS Lambda (optionally),
+after this, writes data using batch to the destination:
+1. AWS Destinations: **S3**, **Redshift**, **OpenSearch**
+2. 3rd-party Partner Destinations: Datadog, Splunk, MongoDB, etc
+3. Custom Destinations: HTTP Endpoint
+
+You can send failed or all data to a backup S3 bucket.
+
+* **Near Real Time: 60-second latency** minimum for non-full batches
+* Pay for data going through Firehose.
+
+### Data Analytics
+
+Fully managed, serverless service for SQL/Flink analytics.
+
+Data Analytics for SQL applications can have the following sources:
+1. Data Streams
+2. Data Firehose
+
+and destinations are:
+1. Data Streams
+2. Data Firehose
+
+Data Analytics for Apache Flink can have the following sources:
+1. Data Streams
+2. MSK
+
 ## AWS DynamoDB
 
 Item key consists of:
