@@ -435,6 +435,170 @@ In case of `var` usage it will give the following output:
 Uncaught TypeError: greet is not a function
 ```
 
+Property attributes:
+* Value
+* Get
+* Set
+* Writable default = `true` can be set to `false`, then constant
+* Enumerable: default = `true`
+* Configurable: default = `true` | not deletable
+
+### Object.preventExtensions()
+
+Prevents addition of new properties
+
+```javascript
+Object.preventExtensions();
+Object.isExtensible(); // checks if extensible or not
+```
+
+### Object.seal()
+
++ Prevent extensions
++ Properties non-configurable
+
+```javascript
+Object.seal(); //
+Object.isSealed(); // checks if sealed or not
+```
+
+### Object.freeze()
+
++ Seal
++ Writable
++ Closed Properties
+
+```javascript
+Object.freeze(); // seal // writable // closed properties
+Object.isFrozen(); // check is frozen or not 
+```
+
+### Arrays
+
+```javascript
+const ar1 = [];
+const ar2 = Array.of();
+const ar3 = new Array(6).fill(1);
+```
+
+```javascript
+const arr = [1, 2, 3];
+arr[0]; // = 1;
+arr[1]; // = 2;
+```
+
+#### Length
+
+Array length:
+
+```javascript
+const arr = [1, 2, 3];
+arr.length; // 3
+```
+
+#### Every
+
+Returns boolean: rules are satisfied or not.
+
+```javascript
+const arr = [1, 2, 3];
+arr.every(x => x % 2 === 0); // similar to matches() in Java
+// [2, 4] = true
+// [2, 3] = false
+```
+
+#### Some
+
+Returns boolean: rules are satisfied partially or not.
+
+```javascript
+arr.some(x => x % 2 === 0);
+// [1, 2] = true
+// [2, 4] = true
+// [1, 3] = false
+```
+
+#### Map
+
+Immutable operation that returns a new array:
+
+```javascript
+arr.map(x => x * 2);
+// [1, 2, 3] = [2, 4, 6]
+```
+
+#### Filter
+
+Returns a new array that satisfies filter:
+
+```javascript
+arr.filter(x => x % 2 === 0);
+// [1, 2, 4] = [2, 4]
+```
+
+#### Reduce
+
+Reducing an array to a value:
+
+```javascript
+arr.reduce((a, b) => a + b, 1);
+// [1, 2, 3] = 6
+```
+
+#### ForEach vs. For vs. For... in vs. For...of
+
+```text
+forEach => for
+for...in better for objects
+for...of if you want to use break
+for => if you want to handle current step
+``` 
+
+TBD..
+
+#### Iterator
+
+```javascript
+const arr = [1, 2, 3];
+let it = arr[Symbol.iterator()]
+it.next(); // {value: 1, done: false}
+it.next(); // {value: 2, done: false}
+it.next(); // {value: 3, done: false}
+it.next(); // {value: undefined, done: true}
+```
+
+#### Unshift
+
+```javascript
+const arr = [1, 2, 3];
+arr.unshift(0);
+// [0, 1, 2, 3]
+```
+
+#### Pop
+
+TBD..
+
+#### Slice
+
+```javascript
+const arr = ['ant', 'bison', 'camel', 'duck', 'elephant'];
+arr.slice(2);
+// ['camel', 'duck', 'elephant']
+arr.slice(2, 4);
+// ['camel', duck']
+```
+
+#### Find vs. Includes
+
+```javascript
+const arr = [1, 2, 3];
+arr.find(x => x % 2 === 0);
+arr.includes(1); // true
+arr.includes(2); // true
+arr.includes(4); // false
+```
+
 ## Express.js
 
 ## TypeScript
