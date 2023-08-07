@@ -369,7 +369,8 @@ This is different from relational databases, where you need to allow `NULL` valu
 This is not an exhaustive list, if you are looking for some,
 please take a look [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-params.html).
 
-* `format`: used to customize the format for `date` fields, all the formats are located [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-date-format.html#built-in-date-formats)
+* `format`: used to customize the format for `date` fields, all the formats are
+  located [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/mapping-date-format.html#built-in-date-formats)
 * `properties`: defines nested fields for `object` and `nested` fields
 * `coerce`: used to enable or disable coercion of values, **enabled by default**
 * `doc_values`: opposite for inverted index, used for sorting, aggregations, and scripting,
@@ -396,3 +397,171 @@ since values are already being analyzed.
 Field mappings also cannot be removed.
 
 ### Reindexing
+
+Elasticsearch exposes a convenient API for document reindexing:
+
+```text
+POST /_reindex
+{
+  "source": {
+   "index": "reviews"
+  },
+  "dest": {
+    "index": "reviews_new"
+  },
+  "script": {
+    "source": """
+     if (ctx._source.product_id != null) {
+       ctx._source.product_id = ctx._source.product_id.toString();
+     }
+  }
+}
+```
+
+Also, you can reindex documents matching a query, example:
+
+```text
+POST /_reindex
+{
+  "source": {
+    "index": "reviews",
+    "query": {
+     // query to match
+    }
+  },
+  ...
+}
+```
+
+To remove some fields, you can define a scope of `_source` parameters to include in
+a new index:
+
+```text
+...
+"source" {
+  "index": "reviews",
+  "_source": ["content", "rating"]
+},
+...
+```
+
+### Field Aliases
+
+Aliases can be used within queries.
+To add alias for a parameter:
+
+```text
+PUT /reviews/_mapping
+{
+  "properties": {
+    "comment": {
+      "type": "alias",
+      "path": "content"
+    }
+  }
+}
+```
+
+Elasticsearch also supports index aliases.
+
+### Multi-field mappings
+
+In some cases you may need both features:
+`text` search and `keyword`.
+
+```text
+"ingredients": {
+  "type": "text",
+  "fields": {
+    "keyword": {
+      "type": "keyword"
+    }
+  }
+}
+```
+
+Now, ingredients will be indexed 2 times:
+`ingredients` as a text type in inverted index, and
+`ingredients.keyword` for exact matching.
+
+<br>
+To execute exact matching on `ingredients.keyword`:
+
+```text
+"query": {
+  "term": {
+    "ingredients.keyword": "Spaghetti"
+  }
+}
+```
+
+### Index templates
+
+Index templates specify settings and mappings.
+They are taking effect when a client creating new indices.
+**It can be useful for time-series data**.
+
+```text
+PUT /_template/access-logs
+{
+  "index_patterns": ["access-logs-*"],
+  "settings": {
+    "index.mapping.coerce": false
+  },
+  "mappings": {
+    "properties": {
+      "@timestamp": {
+        "type": "date"
+      },
+      ...
+    }
+  }
+}
+```
+
+This template will be applied to each index that starts with `access-logs-`.
+
+**Putting new index, you can override values, specified with an index template**.
+
+Also, updating a template will affect only new indexes, to do so
+just put full configuration via `PUT /_template/access-logs`.
+
+### ECS
+
+**Elastic Common Schema (ECS)** is a [specification](https://www.elastic.co/guide/en/ecs/current/ecs-reference.html) of
+common fields and how they
+should be mapped.
+
+With ECS, the field name is the same regardless of the event source: for instance,
+`@timestamp` for all timestamps.
+ECS treats documents as _events_.
+ECS does not provide fields for non-events (products, employees, etc),
+**since ECS is use-case independent**.
+
+### Dynamic mapping
+
+In case you don't have any mapping, **Elasticsearch will create it dynamically**.
+There are some rules Elasticsearch uses to create dynamic mapping:
+
+| JSON                  | Elasticsearch                                                                     |
+|-----------------------|-----------------------------------------------------------------------------------|
+| string                | one of the following:<br/> text with keyword mapping<br/> date<br/> float or long |
+| integer               | long                                                                              |
+| floating point number | float                                                                             |
+| boolean               | boolean                                                                           |
+| object                | object                                                                            |
+| array                 | depends on the first non-null value                                               |
+
+The good practice is to create a mapping before indexing the documents.
+But also, you can allow Elasticsearch to add some fields dynamically.
+
+<br>
+
+Setting `dynamic` to `false` won't index new fields,
+but they still will be a part of `_source`.
+<br>
+Setting `dynamic` to `"strict"` is another approach,
+that will reject unmapped fields, denotes that
+all fields must be mapped explicitly.
+
+You can override dynamic for `other`.
