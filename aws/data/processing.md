@@ -138,3 +138,51 @@ Development endpoints for developing ETL code charged by the minute.
 
 Lake Formation is built on top of [Glue](#aws-glue).
 Makes it easy to set up a secure data lake.
+Everything in Glue you can do with Lake Formation.
+
+![lake.png](assets/lake.png)
+
+* Access control
+* Auditing
+
+## AWS Security Lake
+
+Separate version of [lake formation](#aws-lake-formation),
+built for security teams.
+**Centralizes security data**.
+Normalizes data across AWS and on-premises.
+
+## AWS EMR
+
+**Elastic MapReduce (EMR): managed Hadoop cluster** on EC2 instances.
+Includes Spark, HBase, Presto, Flink, Hive and more.
+Has its own EMR Notebooks.
+Frameworks and applications are specified at cluster launch.
+
+EMR Cluster basically is just a collection of EC2 instances:
+1. **Master node**: manages cluster
+2. **Core node**: host HDFS data and runs tasks
+3. **Task node** (Optional): run tasks, does not host data, good use of **spot instances**
+
+### Transient cluster vs. Long-running:
+transient cluster will terminate once all steps are complete, saves money;
+long-running cluster must be manually terminated.
+
+### Storage
+
+1. HDFS: Hadoop Distributed File System,
+   multiple copies stored across nodes for redundancy,
+   files stored as blocks (128 MB default size),
+   **data is ephemeral: HDFS data is lost when the cluster is terminated**;
+   useful for caching intermediate results or workloads with random I/O.
+2. EMRFS: access S3 as if it were HDFS,
+   **allows persistent storage after cluster termination**,
+   strongly consistent, uses DynamoDB to track consistency.
+3. Local file system: suitable only for temporary data (buffers, caches).
+4. EBS for HDFS: allows use of EMR on EBS-only types (M4, C4),
+   deletes volumes when the cluster is terminated;
+   **EBS volumes can only be attached when launching a cluster**;
+   if you manually detach an EBS volume, EMR treats that as a failure
+   and replaces it.
+
+### Policy
