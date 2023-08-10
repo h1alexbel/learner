@@ -186,3 +186,104 @@ long-running cluster must be manually terminated.
    and replaces it.
 
 ### Policy
+
+**EMR charges by the hour, plus EC2 charges**.
+Provision new nodes if core node fails.
+* EMR can add and remove tasks nodes on the fly:
+  increase processing capacity, but not HDFS capacity.
+* EMR can resize a running cluster's core nodes:
+  increases both processing and HDFS capacity.
+
+**Adding and removing task nodes on the fly is a good way of dealing with
+temporary surges**.
+
+### Managed Scaling
+
+Introduced in 2020, support instance groups and instance fleets.
+Scales sport, on-demand, and instances in a Savings Plan within the same cluster.
+Available for Spark, Hive, and YARN workloads.
+
+### Hadoop
+
+Hadoop core consists of:
+1. **MapReduce**: maps data to key/value pais,
+   reduces intermediate results to final output.
+2. **YARN**: yet another resource negotiator,
+   manages cluster resources for multiple data processing frameworks.
+3. **HDFS**: hadoop distributed file system, distributes data blocks
+   across cluster in a redundant manner, ephemeral in EMR, data lost on termination.
+
+### EMR Serverless
+
+Instead of login to the master node,
+you can use EMR Serverless:
+choose an EMR Release and Runtime (Spark, Hive, Presto)
+and then submit queries/scripts via job run requests.
+EMR manages underlying capacity, but you can specify pre-initialized capacity.
+**Remember that Spark adds 10% overhead to this capacity for executors and drivers**.
+**EMR Serverless solves a problem with capacity planning and provisioning**.
+
+
+EMR Serverless Application lifecycle:
+
+![emr-lifecycle.png](assets/emr-lifecycle.png)
+
+This isn't automatic: you must initiate API call, such as
+`CreateApplication`, `StartApplication`, `StopApplication` and `DeleteApplication`.
+
+### EMR on EKS
+
+EMR on EKS allows submitting a Spark job on EKS without provisioning
+EMR clusters.
+
+![emr-modes.png](assets/emr-modes.png)
+
+### Spark
+
+Distributed processing framework for big data.
+**In-memory caching, optimized query execution**.
+Supports Java, Scala, Python, and R.
+
+Supports code reuse across:
+* Batch processing
+* Interactive queries
+* Real-time analytics
+* Machine Learning
+* Graph processing
+Support of stream processing using
+Spark Streaming, can be integrated with Kinesis, Kafka.
+
+
+**Spark is not a tool for OLTP**.
+
+Spark apps are run as an independent processes
+on a cluster.
+The `SparkContext` (driver program) coordinates them through a
+`Cluster Manager` (Spark YARN).
+Cluster Manager distributes tasks across `Executor`'s,
+which run them and store data.
+**SparkContext sends application coed and related tasks to executors**.
+
+![spark.png](assets/spark.png)
+
+Spark components:
+* **Spark Core**: memory management, fault recovery, scheduling, job management,
+  interact with storage.
+* **Spark Streaming**: Real-time streaming analytics, structured streaming;
+  integration with Kafka, Flume, HDFS, ZeroMQ.
+* **Spark SQL**: up to 100x faster than MapReduce,
+  SQL-style interface to underlying data on EMR cluster;
+  JDBC, ODBC, JSON, HDFS, ORC, HiveQL
+* **MLLib**
+* **GraphX**
+
+### Structured Streaming
+
+Spark Streaming operates with a term of **DataSet** or DataFrame in Python.
+DataSet is just basically a giant table of data, so you can treat your data as a large
+database table.
+
+Spark Streaming can be integrated with Kinesis, Redshift, Athena
+using the related packages.
+
+### Hive on EMR
