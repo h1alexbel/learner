@@ -238,6 +238,14 @@ EMR clusters.
 
 ![emr-modes.png](assets/emr-modes.png)
 
+### Instance Types
+
+**Master node**:
+* `m5.xlarge` if < 50 nodes, larger if > 50 nodes
+**Core and Task nodes**:
+* `m5.xlarge`, `m4.xlarge`, depends on the workload (CPU/Memory/Network),
+  **Spot Instances** is a good choice for Task nodes. 
+
 ### Spark
 
 Distributed processing framework for big data.
@@ -287,3 +295,62 @@ Spark Streaming can be integrated with Kinesis, Redshift, Athena
 using the related packages.
 
 ### Hive on EMR
+
+Hive uses SQL-like syntax, called HiveQL,
+which describes mappings for unstructured data 
+to make it 'structured'.
+
+**Hive is a tool for OLAP queries, and is not designed to work
+with OLTP/stream processing**.
+
+Hive maintains a **metastore** that imparts a structure to you
+define on the unstructured data that is stored on HDFS.
+
+
+By default, Hive maintains metastore in MySQL database on the master node
+of your cluster.
+External metastore can boost availability.
+Such tools like: **AWS RDS**, **AWS Glue Data Catalog** can be used 
+as external metastore.
+Also, you can write tables in **S3**, load scripts from S3,
+and use DynamoDB as an external table.
+
+### Apache Pig
+
+Instead of MapReduce, instead of creating mappers and reducers
+Pig introduces **Pig Latin**, a scripting language with SQL-like syntax
+to define a map and reduce steps.
+
+Highly extensible with User Defined functions.
+
+### HBase
+
+HBase is a non-relational, petabyte-scale database.
+**Based on Google BigTable, on top of HDFS**.
+Operates in-memory, integrates with [Hive](#hive-on-emr).
+
+DynamoDB vs. HBase:
+`DynamoDB`:
+* Fully managed, serverless
+* More integration with AWS
+* Glue integration
+
+`HBase`:
+* Efficient storage of sparse data
+* Appropriate for high-frequency counters
+* High write throughput
+* More integration with Hadoop
+
+HBase can be integrated not only with HDFS,
+EMRFS is also supported.
+
+### Presto
+
+Presto can connect to **many different databases and data stores
+at once**, **and query across them**.
+Familiar SQL-like syntax, optimized for OLAP.
+
+### Hue
+
+**Hadoop User Experience** is a Hadoop UI for applications on your EMR cluster.
+Can browse and move data between HDFS and S3.
