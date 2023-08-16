@@ -261,6 +261,7 @@ Supports code reuse across:
 Support of stream processing using
 Spark Streaming, can be integrated with Kinesis, Kafka.
 
+Some code executed in clustered network, **while some code executed by driver**.
 
 **Spark is not a tool for OLTP**.
 
