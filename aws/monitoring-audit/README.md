@@ -42,13 +42,17 @@ In CloudWatch, you can set up your own custom metrics.
 Use API `PutMetricData`.
 * Ability to use dimensions to segment metrics:`instance.id`, `environment.name`
 * Metric resolution: `StorageResolution` API, possible values:
-  Standard: 1 minute, High: 1/5/10/30 seconds, higher cost
+  Standard: 1 minute, High: 1/5/10/30 seconds, higher cost,
+  If you set an alarm on a high-resolution metric, you can specify a high-resolution alarm
+  with a **period of 10 seconds or 30 seconds**,
+  or you can set a regular alarm with a period of any multiple of 60 seconds.
 
 ### Logs
 
 * `Log groups`: application name.
 * `Log stream`: instances within application/log files/containers.
   Also, you will need to define log expiration policy.
+**Log Retention Policy defined at Log Groups level**.
 
 Logs Sources:
 * SDK
@@ -235,4 +239,58 @@ Also, it can be used in Fargate Cluster as Side Car.
 
 ![ecs.png](ecs.png)
 
+### Distro for OpenTelemetry
+
+Secure, production-ready AWS-supported distribution of the open-source
+project OpenTelemetry.
+Collects metadata from your AWS resources and services.
+Simply put, it is open source X-Ray.
+
+**Migrate from X-Ray to AWS Distro for OpenTelemetry if you want to standardize
+APIs or send traces to multiple destinations simultaneously**.
+
+![open.png](open.png)
+
 ## AWS CloudTrail
+
+Provides governance, compliance and audit for your AWS Account.
+**CloudTrail is enabled by default**.
+Get a history of events and API calls made within your AWS Account by
+console, SDK, CLI, AWS Services.
+
+CloudTrail logs can be put into S3 or CloudWatch.
+A trail can be applied to **All Regions (default)** or a single Region.
+
+If a resource is deleted, investigate CloudTrail first!
+
+![cloudtrail.png](cloudtrail.png)
+
+### CloudTrail Events
+
+* `Management Events`: ops that are performed on resources in your AWS Account;
+  examples: configuring security (IAM `AttachRolePolicy`),
+  **by default Management Events are logged**, can separate Read Events (don't modify resources),
+  and Write Events (that can modify resources).
+* `Data Events`: **by default data events are not logged**,
+  example: S3 object-level activity (ex: `GetObject`, `DeleteObject`, `PutObject`):
+  events separated into Read and Write events.
+
+Events are stored for 90 days in CloudTrail, to keep events you need
+to put them into S3 and analyze it using Athena.
+
+### CloudTrail Insights
+
+Enable CloudTrail Insights to detect unusual activity in your account:
+* inaccurate resource provisioning
+* hitting service limits
+* burst of IAM actions
+
+CloudTrail Insights **analyzes normal management events** to create a baseline,
+and then **analyzes write events to detect unusual patterns**.
+
+Insights Events can be sent to S3 bucket and EventBridge.
+
+### CloudTrail + EventBridge to intercept API calls
+
+![trail-eventbridge.png](trail-eventbridge.png)
+
