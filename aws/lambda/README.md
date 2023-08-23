@@ -70,7 +70,7 @@ Services that are synchronous:
   * Alexa
   * Kinesis Data Firehose
 
-### Lambda + ELB
+#### Lambda + ELB
 
 A Lambda function must be registered in a **target group**.
 
@@ -99,3 +99,117 @@ When you enable it, values for them will be translated to
 arrays inside the JSON request:
 
 ![mv.png](mv.png)
+
+### Async Invocation
+
+S3, SNS, EventBridge are callers of async invocation.
+Also, SES (Simple Email Service), CodeCommit, CodePipeline, Cloudformation.
+
+
+**Invocation type will be an Event**,
+so we are just triggering function
+and don't know the result.
+
+
+**Whether always OK or function failed,
+Lambda will return 202 (Accepted) status code**.
+
+
+**Lambda attempts to retry on errors: 3 tries total,
+1-minute wait after 1st one, then 2 minutes wait**.
+
+Make sure that processing is **immutable**.
+
+If the function is retried, you will see 
+duplicate logs entries in CloudWatch.
+
+**Can define a DLQ: SQS or SNS for failed processing
+(IAM permissions are needed)**.
+
+
+### Lambda + EventBridge
+
+Events will be sent by EventBridge as a Lambda function source:
+
+![events.png](events.png)
+
+### Lambda + S3 Events
+
+S3 Events can call asynchronously
+Lambda function:
+
+![s3.png](s3.png)
+
+If you want to ensure that an event
+notification is sent for every successful write operation,
+you can enable versioning on your bucket.
+
+### Event Source Mapping
+
+**Records need to be polled from the source**.
+Applies to Kinesis Data Streams,
+SQS and SQS FIFO queues, DynamoDB Streams.
+
+In this case, lambda function will be invoked synchronously.
+
+![mapping.png](mapping.png)
+
+There are two types of event source mappers:
+1. Streams
+2. Queues
+
+#### Streams
+
+Applies to Kinesis Data Streams and DynamoDB Streams.
+An event source mapping creates an iterator for each shard,
+processes items in order at shard level.
+Processed items aren't removed from the stream:
+so other consumers can process them.
+
+For low traffic streams, you can set up
+a batch window to accumulate records before processing.
+For high one, process multiple batches in parallel:
+up to 10 batches per shard, in-order processing for each partition key.
+
+By default, if your function returns an error, the entire batch
+is reprocessed until the function succeeds, or batch expires.
+
+To work on this, you can:
+1. discard old events
+2. restrict the number of retries
+3. split the batch on error
+**Discarded events can go to a destination**.
+
+#### Queue
+
+Applies for SQS and SNS.
+
+![queues.png](queues.png)
+
+In the case of SQS, Event Source Mapping will poll SQS
+using Long Polling.
+Batch size also can be specified.
+
+AWS Recommended: set the queue visibility timeout
+to 6x the timeout of your Lambda function.
+
+**To use DLQ, you need to set up it on SQS level,
+not on Lambda**.
+
+For `SQS Standard`, Lambda adds 60 more instances per minute to scale up.
+Up to 1000 batches of messages processed simultaneously.
+
+While `SQS FIFO`: Lambda function scales to the number
+of active messages groups.
+
+### Event & Context Objects
+
+![ec.png](ec.png)
+
+`Event` object is JSON document that contains
+information to process: `version`, `source`, `type`, `time`,
+and `detail`: body.
+
+
+`Context` object is metadata object, `aws_request_id`,
+`function_name`and other.
