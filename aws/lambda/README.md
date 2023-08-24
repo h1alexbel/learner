@@ -213,3 +213,58 @@ and `detail`: body.
 
 `Context` object is metadata object, `aws_request_id`,
 `function_name`and other.
+
+### Destinations
+
+Asynchronous invocations can define destinations
+for successful and failed event:
+* SQS
+* SNS
+* Lambda
+* EventBridge
+
+AWS recommends using destinations instead of DLQ.
+
+
+For Event Source Mapping, for discarded event batches:
+* SQS
+* SNS
+
+### Permissions
+
+Grant the Lambda function permissions to AWS 
+services/resources (destinations).
+Sample managed policies for Lambda:
+* `AWSLambdaBasicExecutionRole`: upload logs to CloudWatch.
+* `AWSLambdaKinesisExecutionRole`: read from Kinesis.
+* `AWSLambdaDynamoDBExecutionRole`: read from DynamoDB streams.
+* `AWSLambdaSQSQueueExecutionRole`: read from SQS queue.
+* `AWSLambdaVPCAccessExecutionRole`: deploy Lambda function in VPC.
+* `AWSXRayDaemonWriteAccess`: upload trace data to X-Ray.
+
+When you use an event source mapping to invoke your function, Lambda
+uses the execution role to read event data.
+
+**Create one Lambda Execution Role per function**.
+
+If your Lambda function is invoked by other services, we should use
+`Lambda Resource-Based Policies`: give to other accounts and AWS services
+permissions to use your Lambda resources.
+
+An IAM principal can access Lambda:
+* if the IAM policy attached to the principal authorizes it (e.g., user access)
+* or if the resource-based policy authorizes (e.g., service access)
+
+When an AWS service like S3 calls Lambda function, the resource-based
+policy gives it access.
+
+### Env
+
+Besides, you are using environment variables, Lambda service adds its own
+system environment variables as well.
+Helpful to store secrets (encrypted by KMS).
+Secrets can be encrypted using a Lambda service key
+or your own CMK (Customer Master Key).
+
+Environment variables help change the behavior without 
+changing the source code.
