@@ -268,3 +268,201 @@ or your own CMK (Customer Master Key).
 
 Environment variables help change the behavior without 
 changing the source code.
+
+### Lambda monitoring and tracing
+
+Lambda execution logs are stored in AWS CloudWatch Logs.
+To do logging, Lambda needs `AWSLambdaBasicExecutionRole`
+to authorize into CloudWatch.
+
+Lambda metrics in CloudWatch:
+* Invocations, Durations, Concurrent Executions
+* Error count, Success rates, Throttles
+* Async Delivery Failures
+* Async Delivery Failures
+* Iterator Age (Kinesis & DynamoDB Streams)
+
+Integration with X-Ray can be enabled in **Active Tracing**,
+it will run the X-Ray daemon for you.
+Ensure Lambda function has correct IAM Execution Role:
+`AWSXRayDaemonWriteAccess`.
+Now, you can use X-Ray SDK in Lambda code.
+
+Environment variables to communicate with X-Ray:
+* `_X_AMZN_TRACE_ID`: contains the tracing header.
+* `AWS_XRAY_CONTENT_MISSING`: by default, LOG_ERROR.
+* `AWS_XRAY_DAEMON_ADDRESS`: the X-Ray Daemon IP_ADDRESS:PORT
+
+### Lambda with CloudFront
+
+To execute some form of logic at the edge:
+a code that you write and attach to CloudFront distributions,
+and runs close to your end-users to minimize latency.
+
+
+CloudFront provides two types: `CloudFront Functions`
+and `Lambda@Edge`:
+
+Use-cases:
+1. Website security and privacy
+2. Dynamic web application at the edge
+3. Search Engine Optimization (SEO)
+4. Intelligently Route Across Origins and Data Centers
+5. Bot mitigation at the Edge
+6. Real-time Image Transformation
+7. A/B Testing
+8. User Authentication and Authorization
+9. User tracking
+
+![cf.png](cf.png)
+
+`CloudFront Functions` are lightweight functions written in JavaScript.
+For high-scale, latency-sensetive CDN customizations.
+Sub-ms startup times, **millions of request/second**.
+
+Used to change Viewer requests and responses:
+* Viewer Request: after CloudFront receives a request
+  from a viewer.
+* Viewer Response: before CloudFront forwards the response
+  to the viewer.
+
+Native feature of CloudFront.
+
+Use-cases:
+1. Cache key normalization
+2. Header manipulation
+3. URL rewrites or redirects
+4. Request authentication & authorization
+
+![le.png](le.png)
+
+`Lambda@Edge` Lambda functions written in Node.js or Python:
+scales to 1000s of request/second.
+Used to change CloudFront requests and responses:
+* Viewer Request: after CloudFront receives a request from a viewer.
+* Viewer Response: before CloudFront forwards the response to the viewer. 
+* Origin Request: before CloudFront forwards the request to the origin.
+* Origin Response: after CloudFront receives the response from the origin.
+
+Use-cases:
+1. File system access or access to the body of HTTP request
+2. Accessing other AWS services
+3. Network access to use external services
+
+### Lambda VPC
+
+By default, your Lambda function is launched outside
+your own VPC, in AWS-owned VPC.
+
+Therefore, it cannot access resources
+in your VPC (RDS, ElastiCache, etc).
+
+![vpc.png](vpc.png)
+
+to deploy Lambda in your own VPC, you
+must define the VPC ID, the Subnets and the Security Groups.
+
+Lambda will create an ENI(Elastic Network Interface) in your subnets.
+To do so, Lambda function needs `AWSLambdaVPCAccessExecutionRole` IAM Role.
+
+![eni.png](eni.png)
+
+A Lambda function in your VPC does not
+have internet access.
+
+**Deploying a Lambda function in a public subnet
+does not give it internet access or a public IP**.
+
+To do so, you need to deploy a Lambda function in a private
+subnet gives it internet access if you have a NAT Gateway/Instance.
+
+![gateway.png](gateway.png)
+
+To privately access AWS services, you can use
+VPC endpoints.
+
+**CloudWatch Logs will work even if you don't have an
+endpoint or NAT Gateway**.
+
+### Lambda Configuration
+
+* RAM: 128MB to 10GB in 1MB increments, the more RAM you add,
+  the more CPU credit you get, since **there is no way to change CPU in Lambda**.
+  At 1,792 MB, a function has the equivalent of one full CPU.
+  After 1,792 MB, you get more than one CPU, and need to use multi-threading
+  in your code to benefit from it.
+**If your application is CPU-bound, increase RAM**.
+* Timeout: default is 3 seconds, the maximum is 900 seconds (15 minutes).
+* Lambda execution context: temp runtime environment that initializes any
+  external dependencies of your lambda code.
+  Great for database connections, HTTP clients, SDK clients.
+  **The execution context is maintained for some time in anticipation of
+  another Lambda function invocation**.
+  The execution context includes the `/tmp` dir.
+
+![handler.png](handler.png)
+
+**You should establish a connection between resources outside the handler function**.
+
+Anything that takes a lot of time to initialize
+put it outside the handler and reuse it across executions.
+
+#### /tmp space
+
+If you Lambda function needs disk space to perform operations,
+you can use the `/tmp` directory.
+
+Max size is 10GB, the directory remains when the execution context is frozen,
+providing transient cache that can be for multiple invocations and checkpoints.
+To encrypt content on `/tmp` you must generate KMS Data Keys.
+
+**For permanent persistence of objects, use S3**.
+
+### Lambda Layers
+
+Externalize Dependencies to re-use them without packaging it again:
+
+![layers.png](layers.png)
+
+### File system mounting
+
+Lambda functions can access EFS file systems
+if they are running in a VPC.
+
+Configure Lambda to mount EFS file systems to local directory
+during initialization.
+
+**Limitations**:
+one function instance = one connection.
+
+Lambda storage options:
+
+![opts.png](opts.png)
+
+### Lambda Concurrency
+
+Concurrency limit: up to 1000 concurrent executions.
+Can set a limit, reserved concurrency at the function level.
+Each invocation over the concurrency limit will trigger a 'Throttle'.
+
+Throttle behavior:
+1. Synchronous invocation: 429 Too Many Requests
+2. Asynchronous invocation: retry and then go to DLQ
+
+If you don't reserve concurrency, the following can happen:
+
+![cn.png](cn.png)
+
+**The Concurrency limit applies to all functions in your account**:
+1000 by default, so if you are a reserving function with 20,
+all others can get 980 by now.
+
+For throttling errors and system errors, Lambda returns the event
+to the queue and attempts to run the function again for up to 6 hours.
+
+To run function first time you need to load the code and dependencies, etc,
+it's slow, and users will feel the `cold start`.
+So, the first request served by new instances has higher latency than the rest.
+
+To prevent cold starts, you can use `provisioned concurrency`:
+you allocate concurrency before the function is invoked.
