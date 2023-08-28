@@ -466,3 +466,131 @@ So, the first request served by new instances has higher latency than the rest.
 
 To prevent cold starts, you can use `provisioned concurrency`:
 you allocate concurrency before the function is invoked.
+
+### External Dependencies
+
+You need to install external dependencies alongside your code.
+**AWS SDK comes by default with Lambda function**.
+
+### Lambda + CloudFormation
+
+We can use CloudFormation to upload Lambda function in 2 ways:
+1. Inline: very simple, use Code.ZipFile property:
+   ```yaml
+   Code:
+    ZipFile: |
+      // code
+    ```
+   **You cannot include function dependencies with inline functions**.
+2. Zip file in S3: 
+   ```yaml
+   Code:
+    S3Bucket: my-bucket
+    S3Key: function.zip
+    S3ObjectVersion: String
+   ```
+   Where `function.zip` is a fully capable function with external dependencies,
+   by updating the `S3ObjectVersion`, CloudFormation will update the function
+
+Deploy Lambda functions using CloudFormation & S3 in multiple accounts:
+![cf-multiple.png](cf-multiple.png)
+
+### Lambda Container Images
+
+Deploy **large** Lambda function as container images
+of up to 10GB from ECR.
+**Base Image must implement Lambda Runtime API**.
+
+![from-ecr.png](from-ecr.png)
+
+```dockerfile
+FROM amazon/aws-lambda-nodejs:12
+COPY app.js package*.json ./
+RUN npm install
+CMD ["app.lambdaHandler"]
+```
+
+You can test containers locally using the Lambda Runtime
+Interface Emulator.
+
+
+Use AWS-provided base images such as `aws-lambda-nodejs`,
+since they are **cached by Lambda service**.
+Also, use a **single repository** for Functions with Large Layers:
+ECR compares each layer of a container image when it's pushed
+to avoid storing duplicates.
+
+### Aliases and Versions
+
+When we're ready to publish a Lambda function, we create a version,
+so making your version immutable and reusable (`$LATEST` is mutable).
+**Version is an immutable code and immutable configuration**.
+Versions get their own ARNs.
+
+Aliases are just pointers to Lambda function versions.
+**Aliases are mutable**.
+Aliases cannot reference other aliases.
+Aliases have their own ARNs.
+
+![aliases.png](aliases.png)
+
+Aliases enable canary deployment by assigning weights
+to Lambda functions.
+
+### Lambda with CodeDeploy
+
+CodeDeploy can help you automate traffic
+shift for Lambda aliases.
+
+![deploy.png](deploy.png)
+
+CodeDeploy can do traffic shift in 3 ways:
+1. Linear: grow traffic every N minute until X=100%
+2. Canary: try X percent then 100%
+3. AllAtOnce: immediate
+
+You can create Pre- and Post-traffic hooks to
+check the health of Lambda function.
+
+In AppSpec.yml:
+* Name(required): name of Lambda function to deploy
+* Alias(required): the name of the alias to the Lambda function
+* CurrentVersion(required): the version of Lambda function traffic points to
+* TargetVersion(required): the version of Lambda function traffic is shifted to
+
+### Function URL
+
+Dedicated HTTP endpoint for your Lambda function.
+A unique URL is generated for you, never changes.
+Which looks like this:
+`https://<url-id>.lambda-url.<region>.on.aws`, supports IPv4 and IPv6.
+
+**You can access your Function URL through public-internet only**.
+Function URL supports Resource-based policies and CORS configurations.
+
+Function URL Security authorizes other accounts/specific CIDRs/IAM principles.
+
+Auth Types:
+1. AuthType NONE: allow public and unauthenticated access,
+   but still you need to grant public access by adding Resource Policy.
+2. AuthType AWS_IAM: IAM authenticates and authorizes request,
+   both principal's Identity-based policy and Resource-based policy are evaluated;
+   principal must have `lambda:invokeFunctionUrl` permissions,
+   if in the **same account** then Identity-based policy **OR** Resource-based policy as ALLOW,
+   if cross-account you need both.
+
+### CodeGuru Profiling
+
+You can profile your Lambda function's code with CodeGuru Profiler
+and get insights.
+Supported for Java and Python runtimes.
+
+### Region Limits
+
+* Execution: memory allocation: 128MB to 10GB,
+  max execution time: 15 minutes (900 seconds),
+  env variables: 4KB,
+  disk capacity in `/tmp` dir: 512MB to 10GB,
+  concurrent executions: 1000
+* Deployment: compressed size: 50MB,
+  size of uncompressed: 250MB
