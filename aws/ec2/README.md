@@ -324,6 +324,10 @@ Amazon Machine Image (AMI) is a customization of an EC2 instance **by reusing EC
 
 ### Auto Scaling Groups
 
+Horizontal scaling implies distributed systems.
+Scale out — increase number of instances.
+Scale in - decrease number of instances.
+
 Auto Scaling Group (ASG) features:
 1. Scale out (add EC2 Instances) to match an increased load
 2. Scale in (remove EC2 Instances) to match a decreased load
