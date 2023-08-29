@@ -45,16 +45,6 @@ You can request a service quota increase by using the **Service Quotas API**.
 
 In AWS, you can create budgets for an account and track billing per service.
 
-#### LAMP Stack on EC2
-1. **L**inux: Os for EC2 Instances.
-2. **A**pache: web server that runs on Linux (EC2).
-3. **M**ySQL: database on RDS.
-4. **P**HP: application logic.
-
-#### WordPress on AWS
-
-![wordpress.png](wordpress.png)
-
 ## AWS S3
 S3 — Simple Storage Service.
 **Distributed Object Storage**.

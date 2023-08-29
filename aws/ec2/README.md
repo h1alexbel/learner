@@ -389,3 +389,13 @@ For this, we can use the **native feature or Instance Refresh**.
 
 Each time, Instances with old Instance Template will be terminated
 and swapped to Instances with new Instance Template.
+
+#### LAMP Stack on EC2
+1. **L**inux: Os for EC2 Instances.
+2. **A**pache: web server that runs on Linux (EC2).
+3. **M**ySQL: database on RDS.
+4. **P**HP: application logic.
+
+#### WordPress on AWS
+
+![wordpress.png](wordpress.png)
