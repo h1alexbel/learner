@@ -321,3 +321,67 @@ Amazon Machine Image (AMI) is a customization of an EC2 instance **by reusing EC
 **An AWS Marketplace AMI**: an AMI someone else made (and potentially sells)
 
 ![ami-cp.png](ami-cp.png)
+
+### Auto Scaling Groups
+
+Auto Scaling Group (ASG) features:
+1. Scale out (add EC2 Instances) to match an increased load
+2. Scale in (remove EC2 Instances) to match a decreased load
+3. Ensure that we have a minimum and a maximum number of EC2 Instances running
+4. Automatically register new instances to a load balancer
+5. If ELB seems that EC2 Instance is unhealthy, then the ASG will terminate it
+6. Re-create an EC2 Instance in case a previous one is terminated or unhealthy
+
+**ASGs are free (you only pay for the underlying EC2 Instances).**
+
+ASG requires a **Launch Template** (contains information on how to launch your EC2 Instances):
+1. AMI, Instance Type
+2. EC2 User Data
+3. EBS Volumes
+4. Security Groups
+5. SSH Key Pair
+6. IAM Roles for your EC2 Instances
+7. Network and Subnet information
+8. Load Balancer information
+
+Also, you need to define:
+1. Size (Min size, Max size, Initial size)
+2. Scaling Policies (when to scale out/scale in)
+
+Use-case: It is possible to scale an ASG **based on CloudWatch alarms**,
+an alarm monitors a metric (such as Average CPU, or a custom metric).
+
+Scaling Policies:
+Dynamic Scaling Policies:
+1. Target Tracking Scaling: I want the avg ASG CPU to stay at around 40%.
+2. Simple/Step Scaling: When CloudWatch alarm is triggered (CPU > 70%), then add 2 units to ASG,
+   When CloudWatch alarm is triggered (CPU < 30%), then remove 1 unit from ASG
+3. Schedule Actions: anticipate a scaling based on known usage patterns;
+   increase the min capacity to 10 at 5pm on Fridays.
+
+Predictive Scaling: continuously forecast load and schedule scaling ahead.
+ML powered.
+
+Metrics to scale on:
+1. CPUUtilization
+2. RequestCountPerTarget
+3. Average Network In/Out
+4. Any custom metric (that you push using CloudWatch)
+
+Scaling Cool-downs:
+**after a scaling activity happens, you are in the cool-down period** (default 300 secs).
+During the cool-down period,
+the ASG will not launch or terminate additional instances (to allow for metrics to stabilize).
+
+![cool-down.png](cool-down.png)
+
+**Use a ready-to-use AMI
+to reduce configuration time**,
+in order to be serving request faster and **reduce the cool-down period**.
+
+Instance Refresh.
+Goal: update launch template and then re-creating all EC2 Instances.
+For this, we can use the **native feature or Instance Refresh**.
+
+Each time, Instances with old Instance Template will be terminated
+and swapped to Instances with new Instance Template.
