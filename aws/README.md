@@ -38,8 +38,8 @@ Table of contents:
 9. [CloudFront, CDN on AWS](cloudfront/README.md)
 10. [ECS, Fargate, and EKS](ecs/README.md)
 11. [IaC with CloudFormation and Beanstalk](cloudformation/README.md)
-12. [Messaging](messaging/README.md)
-13. [Monitoring](monitoring/README.md)
+12. [Messaging: SQS, SNS, Kinesis](messaging/README.md)
+13. [Monitoring: CloudWatch, X-Ray and CloudTrail](monitoring/README.md)
 14. [Lambda](lambda/README.md)
 15. [DynamoDB](dynamo/README.md)
 16. API Gateway
