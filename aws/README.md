@@ -24,57 +24,27 @@ AWS has Global Services:
 3. CloudFront
 4. WAF
 
-But most AWS services are **Region-scoped**.
+Most AWS services are **Region-scoped**.
 
-## AWS Limits and Quotas
-
-API Rate Limits:
-some services have a limit on the number of calls they can receive.
-For dealing with Intermittent Errors: implement **Exponential Backoff**.
-Use a case: `ThrottlingException`, `5xx` server errors.
-**Retry mechanism already included in AWS SDK API calls**.
-Must implement yourself if using the AWS API as-is or in specific cases.
-For dealing with Consistent Errors: request an API throttling limit increase.
-
-Service Quotas (Service Limits):
-e.g. running on-demand standard instances: 1152 CPUs.
-**You can request a service limit increase by opening a ticket**.
-You can request a service quota increase by using the **Service Quotas API**.
-
-## AWS Budget
-
-In AWS, you can create budgets for an account and track billing per service.
-
-## AWS DynamoDB
-
-Item key consists of:
-Partition key (Hash key);
-or
-Partition key (Hash key) and Sort key (Range key).
-
-Local secondary index (LSI) — An index that has the same partition key as the base table,
-but a different sort key.
-
-RCU - Read Capacity Units.
-WCU - Write Capacity Units.
-
-LSI — Local Secondary Index, **can be created only on table creation**, **up to 5** in scope of one table.
-GSI — Global Secondary Index, can be created anytime, **up to 20** in scope of one table.
-
-A global secondary index lets you query over the entire table, across all partitions.
-The primary key of a global secondary index can be either simple (partition key) or composite (partition key and sort key).
-A local secondary index lets you query over a single partition, as specified by the partition key value in the query.
-The primary key of a local secondary index must be composite (partition key and sort key).
-
-In general, you **should use global secondary indexes** rather than local secondary indexes.
-The exception is when you need strong consistency in your query results,
-which a local secondary index can provide but a global secondary index cannot
-(global secondary index queries only support eventual consistency).
-
-DynamoDB is NoSQL, serverless database.
-You can do `Scan`, `Query`, or `GetItem` your Table **Items**.
-`Scan` - iterates through all the items, consumes more RCUs.
-`Query` - iterating require usage of indexes, consumes less RCUs.
-`GetItem` - returns a set of attributes for the **item** with the **given primary key**.
-If there is no matching item,
-GetItem does not return any data and there will be no Item element in the response.
+Table of contents:
+1. [IAM](iam/README.md)
+2. [EC2](ec2/README.md)
+3. [ELB](elb/README.md)
+4. [RDS, Aurora](rds/README.md)
+5. [Caching](caching/README.md)
+6. [Route 53, DNS on AWS](dns/README.md)
+7. [VPC](vpc/README.md)
+8. [S3](s3/README.md)
+9. [CloudFront, CDN on AWS](cloudfront/README.md)
+10. [ECS, Fargate, and EKS](ecs/README.md)
+11. [IaC with CloudFormation and Beanstalk](cloudformation/README.md)
+12. [Messaging](messaging/README.md)
+13. [Monitoring](monitoring/README.md)
+14. [Lambda](lambda/README.md)
+15. [DynamoDB](dynamo/README.md)
+16. API Gateway
+17. CI/CD on AWS
+18. SAM
+19. CDK
+20. Cognito
+21. KMS

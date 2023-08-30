@@ -186,6 +186,8 @@ SDK:
    shows the service permissions granted to a user and when those services were last accessed.
    You can use this information to revise your policies.
 
+Also, in AWS, you can create budgets for an account and track billing per service.
+
 ### Shared Responsibility Model for IAM
 AWS is responsible for Infrastructure (global network security),
 configuration and vulnerability analysis, and compliance validation.
@@ -193,6 +195,21 @@ configuration and vulnerability analysis, and compliance validation.
 While, **you are responsible for managing Users, Groups, Roles, Policies management, and monitoring**.
 Also, MFA enabling, key rotation, usage of IAM tools for applying appropriate permissions,
 analyze access patterns and review permissions.
+
+### AWS Limits and Quotas
+
+API Rate Limits:
+some services have a limit on the number of calls they can receive.
+For dealing with Intermittent Errors: implement **Exponential Backoff**.
+Use a case: `ThrottlingException`, `5xx` server errors.
+**Retry mechanism already included in AWS SDK API calls**.
+Must implement yourself if using the AWS API as-is or in specific cases.
+For dealing with Consistent Errors: request an API throttling limit increase.
+
+Service Quotas (Service Limits):
+e.g. running on-demand standard instances: 1152 CPUs.
+**You can request a service limit increase by opening a ticket**.
+You can request a service quota increase by using the **Service Quotas API**.
 
 ### IAM Summary
 
