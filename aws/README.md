@@ -1421,7 +1421,7 @@ Producer examples:
 API to put record into data stream is `PutRecord`.
 
 Each record is going through hash function for high data distribution: 
-![hot.png](hot.png)
+![hot.png](kinesis/hot.png)
 
 So, to avoid 'hot partition', **use highly distributed partition key**.
 
@@ -1433,7 +1433,7 @@ and multiple Group IDs.
 
 #### ProvisionedThroughputExceeded
 
-![exceeded.png](exceeded.png)
+![exceeded.png](kinesis/exceeded.png)
 
 Solution for this error:
 1. Use a highly distributed partition key
@@ -1479,7 +1479,7 @@ For enabling that, we need to hit `SubscribeToShard` API.
 Lambda functions can also be a Kinesis consumers.
 Lambda functions both support shared and enhanced mode.
 
-![kinesis-lambda.png](kinesis-lambda.png)
+![kinesis-lambda.png](kinesis/kinesis-lambda.png)
 
 * Lambda function will read records in batches using `GetBatch` API
 * Batch size and batch window can be configured
@@ -1497,7 +1497,7 @@ read records from a Kinesis Data Stream with distributed applications
 **Read progress will be checkpoint into DynamoDB (needs IAM access)**.
 Records are read in order at the shard level.
 
-![kcl-4.png](kcl-4.png)
+![kcl-4.png](kinesis/kcl-4.png)
 
 **To scale Kinesis Data Stream, you need to increase the number of shards,
 and only then increase the number of KCL applications**.
