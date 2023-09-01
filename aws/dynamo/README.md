@@ -140,14 +140,17 @@ Distribute partition keys as much as possible.
   `UnprocessedKeys` for failed read ops: exponential backoff
   or add more RCUs.
 
+Using `--starting-token` CLI command you can iterate
+over the elements using token received form `--max-items`
+or other `--starting-token` command.
+
 #### PartiQL
 
 You can use SQL-compatible language for DynamoDB.
 
-TBD..
-
-
 #### Conditional writes
+
+For `PutItem`, `UpdateItem`, `DeleteItem` and `BatchWriteItem`.
 
 Accept a write/update/delete only if conditions are met,
 otherwise returns an error.
@@ -156,13 +159,11 @@ Helps with concurrent access to items.
 ### Indexes
 
 Local secondary index (LSI) — An index that has the same partition key as the base table,
-but a different sort key.
-
-RCU - Read Capacity Units.
-WCU - Write Capacity Units.
+but a different sort key, **used for extend access patterns and avoid scans**.
 
 LSI — Local Secondary Index, **can be created only on table creation**, **up to 5** in scope of one table.
-GSI — Global Secondary Index, can be created anytime, **up to 20** in scope of one table.
+GSI — Global Secondary Index, can be created anytime, **up to 20** in scope of one table,
+need to provision RCUs & WCUs.
 
 A global secondary index lets you query over the entire table, across all partitions.
 The primary key of a global secondary index can be either simple (partition key) or composite (partition key and sort key).
@@ -174,9 +175,96 @@ The exception is when you need strong consistency in your query results,
 which a local secondary index can provide but a global secondary index cannot
 (global secondary index queries only support eventual consistency).
 
-You can do `Scan`, `Query`, or `GetItem` your Table **Items**.
-`Scan` - iterates through all the items, consumes more RCUs.
-`Query` - iterating require usage of indexes, consumes less RCUs.
-`GetItem` - returns a set of attributes for the **item** with the **given primary key**.
-If there is no matching item,
-GetItem does not return any data and there will be no Item element in the response.
+**If the writes are throttled on the GSI, then the main table will be throttled**,
+while LSI uses RCUs & WCUs from the main table.
+
+### Optimistic Locking
+
+A strategy to ensure an item hasn't changed before
+you update/delete it.
+Each item has an attribute that acts as a _version_ number.
+
+![lock.png](lock.png)
+
+### DAX
+
+DynamoDB Accelerator: fully managed, seamless in-memory
+cache for DynamoDB.
+There is no need to change application logic,
+since DAX is fully compatible with DynamoDB.
+
+**Solves a Hot Key problem, too many reads**.
+5 minutes by default of TTL for cache.
+Up to 11 nodes in the cluster.
+Multi-AZ supported.
+
+![dax.png](dax.png)
+
+### Streams
+
+Ordered stream of item-level modifications in a table.
+Stream records can be sent to Kinesis Data Streams, Lambda,
+and so forth.
+
+Data retention for up to 24 hours.
+Use-cases: react to changes in real-time, CDC.
+
+![streams.png](streams.png)
+
+DynamoDB Streams offers the ability to choose the information
+that will be written to the stream:
+* KEYS_ONLY: only the key attributes of the modified item.
+* NEW_IMAGE: the entire item, as it appears after it was modified.
+* OLD_IMAGE: the entire item, as it appeared before it was modified.
+* NEW_AND_OLD_IMAGES: both new and the old images of the item.
+
+DynamoDB Streams are made of shards like Kinesis Data Streams,
+but you don't need to provision shards, it's automated by AWS.
+
+### TTL
+
+Automatically delete items after an expiry timestamp.
+Doesn't consume any WCUs, must be a 'Number' data type
+with Unix epoch timestamp value.
+**Expired items deleted within 48 hours of expiration**
+from both: LSIs and GSIs.
+
+### Transactions
+
+Provides ACID for:
+* Read modes: Eventual Consistency, Strong Consistency, Transactional
+* Write modes: Standard, Transactional
+
+**Consumes 2x more WCUs & RCUs**, since DynamoDB performs
+2 operations for each item: prepare & commit.
+
+Transactions API:
+* TransactGetItems
+* TransactWriteItems
+
+### DynamoDB as Session State
+
+DynamoDB can store a session state.
+
+### Write Sharding
+
+A strategy that allows better distribution of items
+evenly across partitions.
+
+To partition better, add the suffix to a partition key.
+That suffix can be picked randomly or calculated somehow.
+
+![suff.png](suff.png)
+
+Concurrent writes vs. Atomic writes:
+
+![writes.png](writes.png)
+
+### Large Objects in S3
+
+![s3.png](s3.png)
+
+### Migration
+
+AWS Migration Service (DMS) can be used to migrate to DynamoDB
+from other databases.
